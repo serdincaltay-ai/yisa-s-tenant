@@ -6,41 +6,71 @@ import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Activity, Loader2 } from 'lucide-react'
+import { Activity, Loader2, Phone, Lock } from 'lucide-react'
 
 export default function VeliGirisPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [telefon, setTelefon] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  /** Telefon numarasini normalize et: basindaki 0'i kaldir, sadece rakam */
+  const normalizePhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, '')
+    return digits.startsWith('0') ? digits.slice(1) : digits
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!email.trim() || !password.trim()) {
-      setError('E-posta ve şifre zorunludur.')
+    const cleanPhone = normalizePhone(telefon)
+    if (cleanPhone.length !== 10) {
+      setError('Telefon numarasi 10 haneli olmalidir (basinda 0 olmadan).')
+      return
+    }
+    if (!password.trim()) {
+      setError('Sifre zorunludur.')
       return
     }
 
     setLoading(true)
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+      // Telefon numarasini email formatina cevir (Supabase Auth icin)
+      const fakeEmail = `${cleanPhone}@veli.yisa-s.com`
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: fakeEmail,
         password: password.trim(),
       })
 
       if (authError) {
-        setError(authError.message === 'Invalid login credentials'
-          ? 'E-posta veya şifre hatalı.'
-          : 'Giriş yapılamadı. Lütfen tekrar deneyin.')
+        setError(
+          authError.message === 'Invalid login credentials'
+            ? 'Telefon numarasi veya sifre hatali.'
+            : 'Giris yapilamadi. Lutfen tekrar deneyin.'
+        )
+        return
+      }
+
+      // Ilk giris kontrolu: password_changed_at null ise sifre degistirme sayfasina yonlendir
+      const meta = data.user?.user_metadata as Record<string, unknown> | undefined
+      if (!meta?.password_changed_at) {
+        router.push('/veli/sifre-degistir')
+        return
+      }
+
+      // Profil tamamlanmis mi kontrol et
+      const profileRes = await fetch('/api/veli/profil-tamamla')
+      const profileData = await profileRes.json()
+      if (profileData.ok && !profileData.completed) {
+        router.push('/veli/profil-tamamla')
         return
       }
 
       router.push('/veli/dashboard')
     } catch {
-      setError('Giriş sırasında bir hata oluştu.')
+      setError('Giris sirasinda bir hata olustu.')
     } finally {
       setLoading(false)
     }
@@ -53,33 +83,40 @@ export default function VeliGirisPage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2563eb] text-white mb-4">
             <Activity className="h-10 w-10" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">YİSA-S</h1>
-          <p className="text-sm text-gray-600 mt-1">Veli Girişi</p>
+          <h1 className="text-xl font-bold text-gray-900">YiSA-S</h1>
+          <p className="text-sm text-gray-600 mt-1">Veli Girisi</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email" className="text-gray-700">E-posta</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="ornek@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 bg-white border-gray-300 text-gray-900"
-              disabled={loading}
-            />
+            <Label htmlFor="telefon" className="text-gray-700">Telefon Numarasi</Label>
+            <div className="relative mt-1">
+              <Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Input
+                id="telefon"
+                type="tel"
+                placeholder="5XX XXX XX XX"
+                value={telefon}
+                onChange={(e) => setTelefon(e.target.value)}
+                className="pl-9 bg-white border-gray-300 text-gray-900"
+                disabled={loading}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Basinda 0 olmadan 10 haneli telefon numaraniz</p>
           </div>
           <div>
-            <Label htmlFor="password" className="text-gray-700">Şifre</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 bg-white border-gray-300 text-gray-900"
-              disabled={loading}
-            />
+            <Label htmlFor="password" className="text-gray-700">Sifre</Label>
+            <div className="relative mt-1">
+              <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="****"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-9 bg-white border-gray-300 text-gray-900"
+                disabled={loading}
+              />
+            </div>
           </div>
           {error && (
             <p className="text-sm text-red-600 text-center">{error}</p>
@@ -92,15 +129,10 @@ export default function VeliGirisPage() {
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              'Giriş Yap'
+              'Giris Yap'
             )}
           </Button>
         </form>
-        {process.env.NODE_ENV !== 'production' && (
-          <p className="text-xs text-center text-gray-500">
-            Test: veli1@bjktuzla.test (şifre için .env&apos;e bakın)
-          </p>
-        )}
       </div>
     </div>
   )
