@@ -1,26 +1,521 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   YiSA-S Scroll-Snap Sistemi
+   Her section 100vh, smooth kaydirma, sneaker tarzi gecis
+   ═══════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll-snap container — ana sayfa icin */
+.snap-container {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll-snap section — her bolum 100vh */
+.snap-section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   YiSA-S — Renkli sik PWA palet (cyan/amber/emerald gradient vurgular)
+   ═══════════════════════════════════════════════════════════════ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 222 47% 6%;
+  --foreground: 0 0% 98%;
+  --card: 222 35% 10%;
+  --card-foreground: 0 0% 98%;
+  --popover: 222 35% 10%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 187 85% 43%;
+  --primary-foreground: 222 47% 6%;
+  --secondary: 38 92% 50%;
+  --secondary-foreground: 222 47% 6%;
+  --muted: 222 25% 18%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 160 84% 39%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 63% 45%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 222 25% 20%;
+  --input: 222 25% 18%;
+  --ring: 187 85% 50%;
+  --radius: 0.75rem;
+  /* Gradient vurgu renkleri */
+  --gradient-start: 187 85% 43%;
+  --gradient-mid: 38 92% 50%;
+  --gradient-end: 160 84% 39%;
+  /* Chart — canlı renkli palet */
+  --chart-1: 187 85% 55%;
+  --chart-2: 38 92% 55%;
+  --chart-3: 160 84% 45%;
+  --chart-4: 280 67% 58%;
+  --chart-5: 346 77% 58%;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, hsl(222 47% 6%) 0%, hsl(222 40% 8%) 50%, hsl(222 47% 6%) 100%);
+    min-height: 100vh;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+  .animate-spin-slower {
+    animation: spin 6s linear infinite;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease;
+  }
+  /* Scroll-snap yardimci siniflar */
+  .snap-y-mandatory {
+    scroll-snap-type: y mandatory;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+  .snap-always {
+    scroll-snap-stop: always;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+.animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+.animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 8s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Scroll-snap animasyonlari
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px -4px hsl(187 85% 50% / 0.3); }
+  50% { box-shadow: 0 0 40px -4px hsl(187 85% 50% / 0.6); }
+}
+
+@keyframes chevronBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@layer utilities {
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  .animate-glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  .animate-chevron-bounce {
+    animation: chevronBounce 1.5s ease-in-out infinite;
+  }
+}
+
+/* PWA / Mobil — Renkli sik yardimci siniflar */
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/60;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  }
+  .gradient-border {
+    background: linear-gradient(135deg, hsl(187 85% 45% / 0.4), hsl(38 92% 55% / 0.3), hsl(160 84% 45% / 0.4));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+  .accent-glow {
+    box-shadow: 0 0 20px -4px hsl(187 85% 50% / 0.3), 0 0 40px -8px hsl(187 85% 50% / 0.15);
+  }
+  .btn-gradient {
+    background: linear-gradient(135deg, hsl(187 85% 45%), hsl(160 84% 40%));
+  }
+}
+
+/* ===============================================================
+   TV-Buton Layout — Fixed sidebar + slide content
+   =============================================================== */
+.tv-layout {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: hsl(222 47% 6%);
+}
+
+/* Sol sidebar — 60px genislik, dikey icon+label butonlar */
+.tv-sidebar {
+  width: 60px;
+  min-width: 60px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 4px;
+  background: hsl(222 40% 8%);
+  border-right: 1px solid hsl(222 25% 16%);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tv-sidebar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-height: 48px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  color: hsl(215 20% 55%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tv-sidebar-btn:hover {
+  color: hsl(0 0% 95%);
+  background: hsl(222 25% 14%);
+}
+
+.tv-sidebar-btn-active {
+  color: hsl(187 85% 55%) !important;
+  background: hsl(187 85% 50% / 0.12) !important;
+  box-shadow: inset 2px 0 0 hsl(187 85% 50%);
+}
+
+/* Sag content — slide animasyonu 0.4s */
+@keyframes tvSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tv-content-slide {
+  width: 100%;
+  height: 100%;
+  animation: tvSlideIn 0.4s ease-out;
+}
+
+/* Mobile alt tab bar */
+.tv-mobile-tabbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 56px;
+  min-height: 56px;
+  background: hsl(222 40% 8%);
+  border-top: 1px solid hsl(222 25% 16%);
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.tv-mobile-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: hsl(215 20% 55%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+}
+.tv-mobile-tab:hover {
+  color: hsl(0 0% 95%);
+}
+
+.tv-mobile-tab-active {
+  color: hsl(187 85% 55%) !important;
+  background: hsl(187 85% 50% / 0.12) !important;
+}
+
+/* ===============================================================
+   Robot Avatar — 3 panel ortak robot bilesen stilleri
+   =============================================================== */
+.robot-avatar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Gradient animasyonlu yuvarlak cerceve */
+.robot-avatar-frame {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, hsl(187 85% 50%), hsl(280 70% 55%), hsl(38 92% 50%), hsl(187 85% 50%));
+  background-size: 300% 300%;
+  animation: robotGradient 4s ease infinite;
+  box-shadow: 0 0 20px -4px hsl(187 85% 50% / 0.4);
+}
+
+@keyframes robotGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Robot yuz alani */
+.robot-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: hsl(222 40% 10%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gozler */
+.robot-eyes {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.robot-eye {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: hsl(187 85% 55%);
+  position: relative;
+  animation: robotBlink 3.5s ease-in-out infinite;
+}
+
+.robot-eye-left { animation-delay: 0s; }
+.robot-eye-right { animation-delay: 0.1s; }
+
+@keyframes robotBlink {
+  0%, 42%, 48%, 100% { transform: scaleY(1); }
+  45% { transform: scaleY(0.1); }
+}
+
+.robot-pupil {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: hsl(222 40% 6%);
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  animation: robotLook 5s ease-in-out infinite;
+}
+
+@keyframes robotLook {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+}
+
+/* Agiz */
+.robot-mouth {
+  width: 14px;
+  height: 5px;
+  border-radius: 0 0 7px 7px;
+  background: hsl(187 85% 45%);
+  margin-top: 4px;
+  animation: robotTalk 2s ease-in-out infinite;
+}
+
+@keyframes robotTalk {
+  0%, 60%, 100% { height: 5px; }
+  30% { height: 7px; }
+}
+
+/* Anten */
+.robot-antenna {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 8px;
+  background: hsl(215 20% 40%);
+}
+
+.robot-antenna-tip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: hsl(187 85% 55%);
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  animation: robotAntennaPulse 2s ease-in-out infinite;
+}
+
+@keyframes robotAntennaPulse {
+  0%, 100% { box-shadow: 0 0 4px hsl(187 85% 55% / 0.4); }
+  50% { box-shadow: 0 0 10px hsl(187 85% 55% / 0.8); }
+}
+
+/* Konusma balonu */
+.robot-speech-bubble {
+  position: relative;
+  background: hsl(222 35% 12%);
+  border: 1px solid hsl(222 25% 20%);
+  border-radius: 12px;
+  padding: 8px 14px;
+  max-width: 260px;
+  animation: fadeIn 0.5s ease;
+}
+
+.robot-speech-text {
+  font-size: 12px;
+  color: hsl(0 0% 85%);
+  line-height: 1.4;
+}
+
+.robot-speech-arrow {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid hsl(222 35% 12%);
+}
+
+/* ===============================================================
+   Y-Shape Unified Design — 3 panel birlestirici tasarim
+   =============================================================== */
+
+/* Patron: Y govdesi — ince dikey cizgi, koyu minimal */
+.y-panel-patron .tv-sidebar {
+  background: hsl(240 30% 5%);
+  border-right-color: hsl(187 85% 50% / 0.15);
+  width: 56px;
+  min-width: 56px;
+}
+
+/* Vitrin: Y sol dali — sol ustte genisleyen acili tasarim */
+.y-panel-vitrin .tv-sidebar {
+  background: linear-gradient(180deg, hsl(222 35% 10%) 0%, hsl(222 40% 7%) 100%);
+  border-right-color: hsl(187 85% 50% / 0.1);
+}
+
+.y-panel-vitrin .tv-sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(135deg, hsl(187 85% 50% / 0.06), transparent);
+  pointer-events: none;
+}
+
+/* Tenant: Y sag dali — sag ustte genisleyen acili tasarim */
+.y-panel-tenant .tv-sidebar {
+  background: linear-gradient(180deg, hsl(222 30% 10%) 0%, hsl(222 40% 7%) 100%);
+  border-right-color: hsl(222 25% 18%);
+}
+
+/* Glassmorphism kart stilleri */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+
+.glass-panel-strong {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Hero arka plan resimli gradient overlay */
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, hsl(222 47% 6% / 0.92), hsl(222 40% 8% / 0.85));
+  z-index: 1;
+}
+
+/* Renk kodlu brans kartlari */
+.brans-card {
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.brans-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+}
+
+.brans-card:hover::before {
+  opacity: 1;
+}
+
+.brans-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.4);
 }
