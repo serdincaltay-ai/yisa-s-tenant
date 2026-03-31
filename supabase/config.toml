@@ -1,6 +1,8 @@
 # Supabase Configuration
 # yisa-s-tenant — Migration SSOT
 
+project_id = "yisa-s-tenant"
+
 [api]
 enabled = true
 port = 54321
@@ -19,6 +21,8 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
+# SSOT: İlk şifre = telefon numarasının son 4 hanesi (min 4 karakter)
+minimum_password_length = 4
 
 [auth.email]
 enable_signup = true
