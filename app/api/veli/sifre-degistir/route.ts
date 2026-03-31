@@ -28,12 +28,11 @@ export async function POST(req: NextRequest) {
     if (!url || !key) return NextResponse.json({ error: 'Sunucu hatasi' }, { status: 500 })
     const service = createServiceClient(url, key)
 
-    // Sifreyi guncelle
+    // Sifreyi guncelle — password_changed_at'i app_metadata'ya tasi, user_metadata'dan kaldir
+    const { password_changed_at: _old, ...restUserMeta } = (user.user_metadata ?? {}) as Record<string, unknown>
     const { error: updateErr } = await service.auth.admin.updateUserById(user.id, {
       password: newPassword,
-      user_metadata: {
-        ...((user.user_metadata ?? {}) as Record<string, unknown>),
-      },
+      user_metadata: restUserMeta,
       app_metadata: {
         ...((user.app_metadata ?? {}) as Record<string, unknown>),
         password_changed_at: new Date().toISOString(),
