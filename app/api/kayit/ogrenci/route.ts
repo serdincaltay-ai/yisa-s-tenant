@@ -164,63 +164,9 @@ export async function POST(req: NextRequest) {
           // SMS gonderilemese bile kayit devam etsin
         }
       }
-    } else if (veliEmail) {
-      // Fallback: email bazli auth (eski davranis)
-      try {
-        let existingUser = null as { id: string; email?: string } | null
-        let page = 1
-        while (!existingUser) {
-          const { data: listData } = await service.auth.admin.listUsers({ page, perPage: 500 })
-          const users = (listData?.users as unknown as Array<{ id: string; email?: string }>) ?? []
-          const found = users.find(
-            (u) => (u.email ?? '').toLowerCase() === veliEmail.toLowerCase()
-          )
-          if (found) { existingUser = found; break }
-          if (users.length < 500) break
-          page++
-        }
-        if (existingUser) {
-          parentUserId = existingUser.id
-          const { data: existingUt } = await service
-            .from('user_tenants')
-            .select('id')
-            .eq('user_id', parentUserId)
-            .eq('tenant_id', tenantId)
-            .maybeSingle()
-          if (!existingUt) {
-            await service.from('user_tenants').insert({
-              user_id: parentUserId,
-              tenant_id: tenantId,
-              role: 'veli',
-            })
-          }
-        } else {
-          const tempPassword = `Yisa${crypto.randomUUID().slice(0, 8)}`
-          const { data: authData, error: authError } = await service.auth.admin.createUser({
-            email: veliEmail,
-            password: tempPassword,
-            email_confirm: true,
-            user_metadata: { full_name: veliAd, name: veliAd.split(' ')[0] },
-          })
-          if (!authError && authData?.user?.id) {
-            parentUserId = authData.user.id
-            const { error: utError } = await service.from('user_tenants').insert({
-              user_id: parentUserId,
-              tenant_id: tenantId,
-              role: 'veli',
-            })
-            if (!utError) {
-              veliGeciciSifre = tempPassword
-            } else {
-              await service.auth.admin.deleteUser(parentUserId).catch(() => {})
-              parentUserId = null
-            }
-          }
-        }
-      } catch {
-        // Veli iliskilendirme basarisiz olsa bile sporcu kaydina devam et
-      }
     }
+    // Email-only fallback: auth user olusturulmaz (telefon-bazli giris ile uyumsuz)
+    // veliEmail bilgisi athlete kaydinda parent_email olarak saklanir
 
     // --- 2) Sporcu kaydi (athletes) ---
     const { data: athlete, error: athleteError } = await service

@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
       password: newPassword,
       user_metadata: {
         ...((user.user_metadata ?? {}) as Record<string, unknown>),
+      },
+      app_metadata: {
+        ...((user.app_metadata ?? {}) as Record<string, unknown>),
         password_changed_at: new Date().toISOString(),
       },
     })

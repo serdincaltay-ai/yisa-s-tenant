@@ -54,8 +54,8 @@ export default function VeliGirisPage() {
       }
 
       // Ilk giris kontrolu: password_changed_at null ise sifre degistirme sayfasina yonlendir
-      const meta = data.user?.user_metadata as Record<string, unknown> | undefined
-      if (!meta?.password_changed_at) {
+      const appMeta = data.user?.app_metadata as Record<string, unknown> | undefined
+      if (!appMeta?.password_changed_at) {
         router.push('/veli/sifre-degistir')
         return
       }
