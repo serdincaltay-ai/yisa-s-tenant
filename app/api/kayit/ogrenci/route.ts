@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
             .eq('tenant_id', tenantId)
             .maybeSingle()
           const subdomain = subdomainRow?.subdomain ?? 'tesis'
-          const loginUrl = `${subdomain}.yisa-s.com/veli/giris`
+          const loginUrl = `https://${subdomain}.yisa-s.com/veli/giris`
 
           const smsMessage = `YiSA-S Spor\nKullanici adiniz: ${veliTelefon}\nSifreniz: ${veliGeciciSifre}\nGiris: ${loginUrl}`
           const smsResult = await sendSMS(`+90${veliTelefon}`, smsMessage, {

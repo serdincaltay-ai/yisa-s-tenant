@@ -21,10 +21,23 @@ export async function GET() {
     if (!url || !key) return NextResponse.json({ error: 'Sunucu hatasi' }, { status: 500 })
     const service = createServiceClient(url, key)
 
+    // Tenant ID bul (GET icin de tenant bazli sorgulama)
+    const { data: ut } = await service
+      .from('user_tenants')
+      .select('tenant_id')
+      .eq('user_id', user.id)
+      .eq('role', 'veli')
+      .maybeSingle()
+
+    if (!ut) {
+      return NextResponse.json({ ok: true, completed: false, profile: null })
+    }
+
     const { data: profile } = await service
       .from('parent_profiles')
       .select('id, ad_soyad, telefon, email')
       .eq('user_id', user.id)
+      .eq('tenant_id', ut.tenant_id)
       .maybeSingle()
 
     return NextResponse.json({
