@@ -74,10 +74,12 @@ function LoginForm() {
       // kullanicilar/profiles 44000 veya başka hata verirse yine de devam et
       let kullaniciRolKod: string | null = null
       let profilesRole: string | null = null
+      let userTenantsRole: string | null = null
       try {
-        const [kullaniciRes, profileRes] = await Promise.all([
+        const [kullaniciRes, profileRes, userTenantsRes] = await Promise.all([
           supabase.from('kullanicilar').select('rol_id, roller(kod)').eq('auth_id', userId).maybeSingle(),
           supabase.from('profiles').select('role').eq('id', userId).maybeSingle(),
+          supabase.from('user_tenants').select('role').eq('user_id', userId).limit(1).maybeSingle(),
         ])
         const kullanici = kullaniciRes.data as { roller?: unknown } | null
         const roller = kullanici?.roller
@@ -87,6 +89,7 @@ function LoginForm() {
           kullaniciRolKod = (roller as { kod?: string }).kod ?? null
         }
         profilesRole = (profileRes.data as { role?: string } | null)?.role ?? null
+        userTenantsRole = (userTenantsRes.data as { role?: string } | null)?.role ?? null
       } catch {
         // Tablo yok veya 44000 vb. — devam et, PATRON_EMAIL ile rol çözülecek
       }
@@ -97,6 +100,7 @@ function LoginForm() {
         userMetadata: meta as Record<string, unknown>,
         profilesRole,
         kullanicilarRolKod: kullaniciRolKod,
+        userTenantsRole,
       })
 
       const path = ROLE_TO_PATH[role] ?? '/veli'
