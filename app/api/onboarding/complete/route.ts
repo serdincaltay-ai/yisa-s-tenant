@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { subdomainSlug, generateTenantSlug } from '@/lib/utils/slug'
 import { addVercelDomain } from '@/lib/vercel'
+import { SLOT_DEFINITIONS, TEMPLATE_SLOT_CONFIG, mapSablonToTemplateKey } from '@/lib/templates/slot-definitions'
 
 export const dynamic = 'force-dynamic'
 
@@ -178,6 +179,37 @@ export async function POST(req: NextRequest) {
       }
     } catch (e) {
       console.error('[onboarding/complete] Subdomain error:', e)
+    }
+
+    // 5b. Template slotlarını oluştur (FAZ 8)
+    try {
+      const templateKey = mapSablonToTemplateKey(sablonTipi)
+      const slotConfig = TEMPLATE_SLOT_CONFIG[templateKey] ?? TEMPLATE_SLOT_CONFIG['standart']
+
+      // system_templates'den template_id'yi al
+      const { data: sysTemplate } = await service
+        .from('system_templates')
+        .select('id')
+        .eq('template_key', templateKey)
+        .maybeSingle()
+
+      const templateId = sysTemplate?.id ?? null
+
+      // 10 slot kaydı oluştur
+      const slotRows = SLOT_DEFINITIONS.map(slot => ({
+        tenant_id: tenantId,
+        template_id: templateId,
+        slot_key: slot.slot_key,
+        slot_title: slot.slot_title,
+        icerik: {},
+        sira: slot.sira,
+        is_active: slotConfig[slot.slot_key] ?? false,
+      }))
+
+      await service.from('tenant_template_slots').insert(slotRows)
+    } catch (slotErr) {
+      console.error('[onboarding/complete] Slot creation error:', slotErr)
+      // Non-fatal — slotlar sonradan da oluşturulabilir
     }
 
     // 6. Varsayilan calisma saatleri
