@@ -1,9 +1,6 @@
 # Supabase Configuration
 # yisa-s-tenant — Migration SSOT
 
-[project]
-id = ""
-
 [api]
 enabled = true
 port = 54321
@@ -22,7 +19,6 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-min_password_length = 4
 
 [auth.email]
 enable_signup = true
