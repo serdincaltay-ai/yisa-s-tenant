@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const { password_changed_at: _old, ...restUserMeta } = (user.user_metadata ?? {}) as Record<string, unknown>
     const { error: updateErr } = await service.auth.admin.updateUserById(user.id, {
       password: newPassword,
-      user_metadata: restUserMeta,
+      user_metadata: { ...restUserMeta, password_changed_at: null },
       app_metadata: {
         ...((user.app_metadata ?? {}) as Record<string, unknown>),
         password_changed_at: new Date().toISOString(),
