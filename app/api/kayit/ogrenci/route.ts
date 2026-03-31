@@ -286,7 +286,7 @@ export async function POST(req: NextRequest) {
         telefon: veliTelefon || rawTelefon || null,
         email: veliEmail || null,
         kaynak: 'kayit_gorevlisi',
-        durum: 'kayit_yapildi',
+        durum: 'kazanildi',
         notlar: `Cocuk: ${ad} ${soyad}, Brans: ${brans ?? '-'}`,
       })
     } catch {

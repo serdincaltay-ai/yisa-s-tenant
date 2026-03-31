@@ -22,13 +22,15 @@ export async function GET() {
     const service = createServiceClient(url, key)
 
     // Tenant ID bul (GET icin de tenant bazli sorgulama)
-    const { data: ut } = await service
+    // limit(1) ile multi-tenant veli durumunda PGRST116 hatasi onlenir
+    const { data: utRows } = await service
       .from('user_tenants')
       .select('tenant_id')
       .eq('user_id', user.id)
       .eq('role', 'veli')
-      .maybeSingle()
+      .limit(1)
 
+    const ut = utRows?.[0] ?? null
     if (!ut) {
       return NextResponse.json({ ok: true, completed: false, profile: null })
     }
@@ -77,13 +79,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Tenant ID bul
-    const { data: ut } = await service
+    // limit(1) ile multi-tenant veli durumunda PGRST116 hatasi onlenir
+    const { data: utRows } = await service
       .from('user_tenants')
       .select('tenant_id')
       .eq('user_id', user.id)
       .eq('role', 'veli')
-      .maybeSingle()
+      .limit(1)
 
+    const ut = utRows?.[0] ?? null
     if (!ut) {
       return NextResponse.json({ error: 'Tenant bulunamadi' }, { status: 400 })
     }
