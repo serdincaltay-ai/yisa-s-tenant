@@ -96,10 +96,10 @@ const LOGO_STILLERI = [
   { value: 'text-based', label: 'Metin Tabanli', icon: 'Aa', desc: 'Tipografi odakli' },
 ]
 
-const SABLON_TIPLERI: { value: TemplateType; label: string; desc: string; icon: React.ReactNode }[] = [
-  { value: 'standard', label: 'Basit', desc: 'Temiz, hizli, minimal tasarim', icon: <Layout className="h-5 w-5" /> },
-  { value: 'medium', label: 'Orta', desc: 'Gradientler, istatistikler, SSS', icon: <Sparkles className="h-5 w-5" /> },
-  { value: 'premium', label: 'Luks', desc: 'Animasyonlar, tam sayfa, premium', icon: <Eye className="h-5 w-5" /> },
+const SABLON_TIPLERI: { value: TemplateType; label: string; desc: string; icon: React.ReactNode; slotInfo: string }[] = [
+  { value: 'standard', label: 'Minimal', desc: 'Temiz, hizli, minimal tasarim. 5 aktif slot.', icon: <Layout className="h-5 w-5" />, slotInfo: 'hero, program, kayit, iletisim, cta' },
+  { value: 'medium', label: 'Standart', desc: 'Gradientler, istatistikler. 8 aktif slot.', icon: <Sparkles className="h-5 w-5" />, slotInfo: 'hero, program, trainer, aidat, kayit, olcum, iletisim, cta' },
+  { value: 'premium', label: 'Premium', desc: 'Animasyonlar, tam sayfa. 10 aktif slot.', icon: <Eye className="h-5 w-5" />, slotInfo: 'Tum slotlar aktif' },
 ]
 
 const TOTAL_STEPS = 7
@@ -739,6 +739,7 @@ function Step6Sablon({ onSelect }: { onSelect: (s: TemplateType) => void }) {
             <div className="flex-1">
               <p className="text-sm font-semibold text-zinc-200">{sablon.label}</p>
               <p className="text-xs text-zinc-500">{sablon.desc}</p>
+              <p className="text-[10px] text-cyan-400/60 mt-0.5">Slotlar: {sablon.slotInfo}</p>
             </div>
             <ChevronRight className="h-4 w-4 text-zinc-600" />
           </button>

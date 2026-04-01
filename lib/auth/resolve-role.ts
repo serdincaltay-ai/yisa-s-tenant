@@ -18,7 +18,7 @@ export type ResolvedRole =
   | 'veli'
 
 const PATRON_VARIANTS = ['patron', 'Patron', 'PATRON', 'ROL-0', 'rol-0']
-const FRANCHISE_VARIANTS = ['franchise', 'firma_sahibi', 'Franchise Sahibi', 'ROL-1', 'rol-1']
+const FRANCHISE_VARIANTS = ['franchise', 'firma_sahibi', 'owner', 'Franchise Sahibi', 'ROL-1', 'rol-1']
 const VELI_VARIANTS = ['veli', 'Veli', 'ROL-10', 'rol-10']
 
 function normalizeRole(raw: string | undefined | null): ResolvedRole | null {
@@ -41,6 +41,7 @@ export interface ResolveRoleInput {
   userMetadata?: Record<string, unknown>
   profilesRole?: string | null
   kullanicilarRolKod?: string | null
+  userTenantsRole?: string | null
 }
 
 /**
@@ -62,7 +63,11 @@ export function resolveLoginRole(input: ResolveRoleInput): ResolvedRole {
   const fromProfile = normalizeRole(profilesRole ?? undefined)
   if (fromProfile) return fromProfile
 
-  // 4. user_metadata.role
+  // 4. user_tenants.role (tenant bazlı rol)
+  const fromUserTenants = normalizeRole(input.userTenantsRole ?? undefined)
+  if (fromUserTenants) return fromUserTenants
+
+  // 5. user_metadata.role
   const metaRole = userMetadata?.role as string | undefined
   const fromMeta = normalizeRole(metaRole)
   if (fromMeta) return fromMeta

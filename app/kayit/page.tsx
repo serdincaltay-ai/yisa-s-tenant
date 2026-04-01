@@ -372,7 +372,9 @@ export default function KayitGorevlisiPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              E-posta girilirse veli otomatik olarak sisteme kaydedilir ve veli paneline erişim sağlanır.
+              Telefon numarasi girilirse veli otomatik olarak sisteme kaydedilir.
+              Giris bilgileri: telefon (kullanici adi) + son 4 hane (sifre).
+              SMS yapilandirilmissa bilgiler otomatik gonderilir.
             </p>
           </CardContent>
         </Card>
