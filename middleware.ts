@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
  * yisa-s-tenant middleware
  * *.yisa-s.com wildcard subdomain routing.
  * Ana domain (yisa-s.com, www, app) hariç tüm subdomain'leri kabul eder.
- * Geliştirme ortamında localhost'a izin verir.
+ * Geliştirme ortamında localhost'a, Vercel preview'da *.vercel.app'e izin verir.
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
@@ -15,7 +15,10 @@ export function middleware(request: NextRequest) {
   const isDevelopment =
     hostname === "localhost" || hostname === "127.0.0.1";
 
-  if (isDevelopment) {
+  // Vercel preview URL'leri (.vercel.app)
+  const isVercelPreview = hostname.endsWith(".vercel.app");
+
+  if (isDevelopment || isVercelPreview) {
     return NextResponse.next();
   }
 
