@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -16,19 +16,20 @@ export const metadata: Metadata = {
   title: "YİSA-S — Tenant",
   description: "YİSA-S Tesis İşletim Sistemi",
   manifest: "/manifest.json",
-  themeColor: "#22d3ee",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "YİSA-S",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: "cover",
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#22d3ee",
 };
 
 export default function RootLayout({
