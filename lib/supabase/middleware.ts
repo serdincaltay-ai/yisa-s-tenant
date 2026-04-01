@@ -14,17 +14,23 @@ function isYisaDomain(hostname: string): boolean {
   return hostname === YISA_BASE || hostname.endsWith('.' + YISA_BASE)
 }
 
+/** Vercel preview URL'si mi? */
+function isVercelPreview(hostname: string): boolean {
+  return hostname.endsWith('.vercel.app')
+}
+
 export async function updateSession(request: NextRequest) {
   const host = request.headers.get('host') ?? ''
   const hostname = host.split(':')[0].toLowerCase()
 
   // yisa-s.com ve www.yisa-s.com → Bu sitede kal (tanıtım/landing). app/franchise/veli subdomain'leri → aynı proje.
-  // Diğer domainler (vercel.app vb.) → app.yisa-s.com'a yönlendir
+  // Vercel preview ve localhost geçerli. Diğer bilinmeyen domainler → app.yisa-s.com'a yönlendir
   const subdomains = await getFranchiseSubdomains()
   const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
+  const isPreview = isVercelPreview(hostname)
   const isRootSite = ROOT_SITE_DOMAINS.includes(hostname)
   const isYisa = isYisaDomain(hostname)
-  const hasValidSubdomain = isLocal || isRootSite || isYisa
+  const hasValidSubdomain = isLocal || isPreview || isRootSite || isYisa
   if (!hasValidSubdomain) {
     const url = request.nextUrl.clone()
     url.protocol = 'https:'
