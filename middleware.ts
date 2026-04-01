@@ -28,8 +28,11 @@ export function middleware(request: NextRequest) {
     });
   }
 
+  // Vercel preview/deployment URL'lerine izin ver
+  const isVercelPreview = hostname.endsWith(".vercel.app");
+
   // *.yisa-s.com wildcard kontrolü
-  if (!hostname.endsWith(".yisa-s.com")) {
+  if (!isVercelPreview && !hostname.endsWith(".yisa-s.com")) {
     return new NextResponse("Geçersiz domain.", { status: 403 });
   }
 
