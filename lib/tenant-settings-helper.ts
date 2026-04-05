@@ -7,7 +7,7 @@
  */
 
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { getTenantConfig, getDefaultTenantConfig, type TenantConfig } from './tenant-template-config'
+import { getTenantConfig, getDefaultTenantConfig, getDersProgrami, type TenantConfig, type DersProgramiItem } from './tenant-template-config'
 
 /** DB'den gelen branding alanları */
 interface TenantBrandingRow {
@@ -42,16 +42,35 @@ export async function getTenantConfigWithOverrides(slug: string): Promise<Tenant
     if (!url || !key) return staticConfig
 
     const service = createServiceClient(url, key)
+
+    // Layer 2: tenants tablosu override
     const { data, error } = await service
       .from('tenants')
-      .select('slug, name, package_type, logo_url, primary_color, secondary_color, accent_color, instagram_url, whatsapp_number, google_maps_url, facebook_url, twitter_url, phone, email, address, working_hours')
+      .select('id, slug, name, package_type, logo_url, primary_color, secondary_color, accent_color, instagram_url, whatsapp_number, google_maps_url, facebook_url, twitter_url, phone, email, address, working_hours')
       .eq('slug', slug)
       .maybeSingle()
 
     if (error || !data) return staticConfig
 
-    const row = data as TenantBrandingRow
-    return mergeTenantConfig(staticConfig, row)
+    const row = data as TenantBrandingRow & { id: string }
+    let config = mergeTenantConfig(staticConfig, row)
+
+    // Layer 3: tenant_template_slots override (slot varsa en yüksek öncelik)
+    try {
+      const { data: slotData } = await service
+        .from('tenant_template_slots')
+        .select('slot_key, icerik')
+        .eq('tenant_id', row.id)
+        .eq('is_active', true)
+
+      if (slotData && slotData.length > 0) {
+        config = applySlotOverrides(config, slotData as SlotRow[])
+      }
+    } catch (slotErr) {
+      console.error('[tenant-settings-helper] Error fetching slot overrides:', slotErr)
+    }
+
+    return config
   } catch (e) {
     console.error('[tenant-settings-helper] Error fetching overrides:', e)
     return staticConfig
@@ -81,9 +100,39 @@ function mergeTenantConfig(base: TenantConfig, row: TenantBrandingRow): TenantCo
     whatsapp: row.whatsapp_number ?? base.whatsapp,
     harita: row.google_maps_url ?? base.harita,
 
-    // Logo (DB varsa override — logoBadge statik kalır)
-    // Not: logo_url ayrı bir alan olarak template'lere geçilecek
+    // Logo URL (DB'den gelen tam URL)
+    logoUrl: row.logo_url ?? base.logoUrl ?? null,
   }
+}
+
+/** tenant_template_slots row tipi */
+interface SlotRow {
+  slot_key: string
+  icerik: string
+}
+
+/** Slot verilerini config'e uygula */
+function applySlotOverrides(config: TenantConfig, slots: SlotRow[]): TenantConfig {
+  const result = { ...config }
+  for (const slot of slots) {
+    switch (slot.slot_key) {
+      case 'ad': result.ad = slot.icerik; break
+      case 'slogan': result.slogan = slot.icerik; break
+      case 'altSlogan': result.altSlogan = slot.icerik; break
+      case 'aciklama': result.aciklama = slot.icerik; break
+      case 'telefon': result.telefon = slot.icerik; break
+      case 'email': result.email = slot.icerik; break
+      case 'adres': result.adres = slot.icerik; break
+      case 'calisma': result.calisma = slot.icerik; break
+      case 'whatsapp': result.whatsapp = slot.icerik; break
+      case 'instagram': result.instagram = slot.icerik; break
+      case 'instagramUrl': result.instagramUrl = slot.icerik; break
+      case 'harita': result.harita = slot.icerik; break
+      case 'logoUrl': result.logoUrl = slot.icerik; break
+      default: break
+    }
+  }
+  return result
 }
 
 /** package_type → TemplateType mapping */
@@ -139,6 +188,42 @@ export async function getTenantBrandingColors(slug: string): Promise<TenantBrand
     }
   } catch {
     return defaults
+  }
+}
+
+/**
+ * Ders programını DB'den getir, yoksa hardcoded fallback kullan.
+ * Önce tenant_schedule tablosuna bakar, boşsa getDersProgrami(slug) fallback.
+ */
+export async function getDersProgramiWithFallback(slug: string): Promise<DersProgramiItem[]> {
+  const hardcoded = getDersProgrami(slug)
+
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!url || !key) return hardcoded
+
+    const service = createServiceClient(url, key)
+
+    // Önce tenant_id'yi bul
+    const { data: tenant } = await service
+      .from('tenants')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle()
+
+    if (!tenant) return hardcoded
+
+    const { data: schedule } = await service
+      .from('tenant_schedule')
+      .select('gun, saat, brans, seviye')
+      .eq('tenant_id', (tenant as { id: string }).id)
+
+    if (!schedule || schedule.length === 0) return hardcoded
+
+    return (schedule as DersProgramiItem[])
+  } catch {
+    return hardcoded
   }
 }
 
