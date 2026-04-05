@@ -12,7 +12,7 @@ import Link from 'next/link'
 const ROL_OPTIONS = [
   { value: 'tesis_muduru', label: 'Tesis İşletme Müdürü' },
   { value: 'sportif_direktor', label: 'Sportif Direktör' },
-  { value: 'antrenor', label: 'Antrenör' },
+  { value: 'coach', label: 'Antrenör' },
   { value: 'yardimci_antrenor', label: 'Yardımcı Antrenör' },
   { value: 'kasa', label: 'Kasa / Kayıt Personeli' },
   { value: 'sekreter', label: 'Telefon / Karşılama' },
@@ -37,7 +37,7 @@ export default function PersonelPage() {
   const [items, setItems] = useState<PersonelItem[]>([])
   const [showModal, setShowModal] = useState(false)
   const [sending, setSending] = useState(false)
-  const [form, setForm] = useState({ ad: '', soyad: '', email: '', rol: 'antrenor' })
+  const [form, setForm] = useState({ ad: '', soyad: '', email: '', rol: 'coach' })
   const [successMsg, setSuccessMsg] = useState('')
 
   const fetchData = async () => {
@@ -78,7 +78,7 @@ export default function PersonelPage() {
       const d = await res.json()
       if (d?.ok) {
         setSuccessMsg(d?.message ?? 'Personel eklendi.')
-        setForm({ ad: '', soyad: '', email: '', rol: 'antrenor' })
+        setForm({ ad: '', soyad: '', email: '', rol: 'coach' })
         setShowModal(false)
         fetchData()
       } else {

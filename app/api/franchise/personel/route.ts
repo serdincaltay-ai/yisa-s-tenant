@@ -15,6 +15,7 @@ const ROL_LABELS: Record<string, string> = {
   pasif: 'Pasif',
   tesis_muduru: 'Tesis İşletme Müdürü',
   sportif_direktor: 'Sportif Direktör',
+  coach: 'Antrenör',
   antrenor: 'Antrenör',
   yardimci_antrenor: 'Yardımcı Antrenör',
   kasa: 'Kasa / Kayıt Personeli',
@@ -24,6 +25,7 @@ const ROL_LABELS: Record<string, string> = {
   admin: 'Admin',
   manager: 'Tesis Müdürü',
   trainer: 'Antrenör',
+  tenant_owner: 'Tesis Sahibi',
   staff: 'Personel',
 }
 
@@ -87,7 +89,7 @@ export async function POST(req: NextRequest) {
     const ad = typeof body.ad === 'string' ? body.ad.trim() : ''
     const soyad = typeof body.soyad === 'string' ? body.soyad.trim() : ''
     const email = typeof body.email === 'string' ? body.email.trim() : ''
-    const rol = typeof body.rol === 'string' && body.rol.trim() ? body.rol.trim() : 'antrenor'
+    const rol = typeof body.rol === 'string' && body.rol.trim() ? body.rol.trim() : 'coach'
 
     if (!ad || !email) return NextResponse.json({ error: 'Ad ve email zorunludur' }, { status: 400 })
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: 'Geçerli email girin' }, { status: 400 })

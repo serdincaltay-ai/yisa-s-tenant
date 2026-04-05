@@ -34,7 +34,7 @@ export async function GET() {
       .eq('owner_id', user.id)
       .limit(1)
       .maybeSingle()
-    if (t) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: 'owner' })
+    if (t) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: 'tenant_owner' })
 
     // user_tenants.role → owner/admin/manager = owner, trainer = coach, kasa/tesis_muduru = kasa erişimi
     const { data: ut } = await service
@@ -45,12 +45,12 @@ export async function GET() {
       .maybeSingle()
     if (ut?.role) {
       const r = String(ut.role).toLowerCase()
-      const canAccessKasa = ['owner', 'admin', 'manager', 'kasa', 'tesis_muduru'].includes(r)
-      if (['owner', 'admin', 'manager'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa, rawRole: r })
-      if (r === 'trainer') return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
+      const canAccessKasa = ['tenant_owner', 'owner', 'admin', 'manager', 'kasa', 'tesis_muduru'].includes(r)
+      if (['tenant_owner', 'owner', 'admin', 'manager'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa, rawRole: r })
+      if (['coach', 'trainer'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
       if (['kasa', 'tesis_muduru'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: r })
       // Granular roles — map to closest PanelRole but preserve rawRole for franchise layout
-      if (['antrenor', 'coach'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
+      if (['coach', 'antrenor'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
       if (['receptionist', 'kayit_gorevlisi'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: false, rawRole: r })
       if (['cleaning', 'temizlik'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: false, rawRole: r })
     }
@@ -59,7 +59,7 @@ export async function GET() {
     const metaRole = (user.app_metadata?.role ?? user.user_metadata?.role) as string | undefined
     if (metaRole) {
       const r = String(metaRole).toLowerCase()
-      if (['owner', 'admin'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: r })
+      if (['tenant_owner', 'owner', 'admin'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: r })
       if (['coach', 'trainer', 'antrenor'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
       if (r === 'parent' || r === 'veli') return NextResponse.json({ role: 'parent' as PanelRole, canAccessKasa: false, rawRole: r })
     }

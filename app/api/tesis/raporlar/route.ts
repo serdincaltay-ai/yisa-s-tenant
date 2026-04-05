@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       .from('staff')
       .select('id')
       .eq('tenant_id', tenantId)
-      .eq('role', 'trainer')
+      .in('role', ['coach', 'trainer'])
       .eq('is_active', true)
     const antrenorSayisi = (staff ?? []).length
 

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     if (!url || !key) return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
 
     const service = createServiceClient(url, key)
-    const { data: staff } = await service.from('staff').select('id').eq('user_id', user.id).eq('role', 'trainer').maybeSingle()
+    const { data: staff } = await service.from('staff').select('id').eq('user_id', user.id).in('role', ['coach', 'trainer']).maybeSingle()
     if (!staff) return NextResponse.json({ error: 'Profil kaydı bulunamadı' }, { status: 404 })
 
     const body = (await req.json()) as { leave_date?: string; reason?: string }

@@ -29,7 +29,7 @@ export default function SportifDirektorLayout({ children }: { children: React.Re
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const raw = d?.rawRole ?? d?.role
-      if (!['sportif_direktor', 'owner', 'admin', 'manager'].includes(raw)) {
+      if (!['sportif_direktor', 'tenant_owner', 'owner', 'admin', 'manager'].includes(raw)) {
         router.replace('/franchise')
         return
       }

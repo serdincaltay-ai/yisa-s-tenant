@@ -29,7 +29,7 @@ export default function IsletmeMuduruLayout({ children }: { children: React.Reac
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const raw = d?.rawRole ?? d?.role
-      if (!['tesis_muduru', 'isletme_muduru', 'manager', 'owner', 'admin'].includes(raw)) {
+      if (!['tesis_muduru', 'isletme_muduru', 'manager', 'tenant_owner', 'owner', 'admin'].includes(raw)) {
         router.replace('/franchise')
         return
       }

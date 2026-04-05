@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       .select('role')
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
-      .in('role', ['owner', 'manager'])
+      .in('role', ['tenant_owner', 'owner', 'manager'])
       .limit(1)
       .maybeSingle()
     if (!userRole) return NextResponse.json({ error: 'Yetki yok' }, { status: 403 })

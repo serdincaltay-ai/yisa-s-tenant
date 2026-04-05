@@ -14,7 +14,7 @@ const THEME_COLORS = ['#1a1a2e', '#0f172a', '#1e293b', '#0c4a6e', '#065f46', '#4
 const STAFF_ROLES = [
   { value: 'admin', label: 'Yönetici' },
   { value: 'manager', label: 'Tesis Müdürü' },
-  { value: 'trainer', label: 'Antrenör' },
+  { value: 'coach', label: 'Antrenör' },
   { value: 'receptionist', label: 'Kayıt Personeli' },
   { value: 'cleaning', label: 'Temizlik Personeli' },
   { value: 'other', label: 'Diğer' },

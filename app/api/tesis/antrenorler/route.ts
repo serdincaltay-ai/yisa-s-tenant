@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       .from('staff')
       .select('id, name, surname, email, phone, role, branch, is_active, created_at')
       .eq('tenant_id', tenantId)
-      .eq('role', 'trainer')
+      .in('role', ['coach', 'trainer'])
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ items: [], error: error.message })

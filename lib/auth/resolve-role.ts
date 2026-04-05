@@ -7,28 +7,28 @@ import { PATRON_EMAIL } from './roles'
 
 export type ResolvedRole =
   | 'patron'
-  | 'franchise'
+  | 'tenant_owner'
   | 'firma_sahibi'
   | 'isletme_muduru'
   | 'tesis_sahibi'
-  | 'antrenor'
+  | 'coach'
   | 'sportif_direktor'
   | 'temizlik'
   | 'kayit_gorevlisi'
   | 'veli'
 
 const PATRON_VARIANTS = ['patron', 'Patron', 'PATRON', 'ROL-0', 'rol-0']
-const FRANCHISE_VARIANTS = ['franchise', 'firma_sahibi', 'owner', 'Franchise Sahibi', 'ROL-1', 'rol-1']
+const FRANCHISE_VARIANTS = ['tenant_owner', 'franchise', 'firma_sahibi', 'owner', 'Franchise Sahibi', 'ROL-1', 'rol-1']
 const VELI_VARIANTS = ['veli', 'Veli', 'ROL-10', 'rol-10']
 
 function normalizeRole(raw: string | undefined | null): ResolvedRole | null {
   if (!raw || typeof raw !== 'string') return null
   const r = raw.trim().toLowerCase()
   if (PATRON_VARIANTS.some((v) => v.toLowerCase() === r)) return 'patron'
-  if (FRANCHISE_VARIANTS.some((v) => v.toLowerCase() === r)) return 'franchise'
+  if (FRANCHISE_VARIANTS.some((v) => v.toLowerCase() === r)) return 'tenant_owner'
   if (['isletme_muduru', 'tesis_sahibi', 'tesis müdürü'].some((v) => r.includes(v.replace(/\s/g, '')))) return 'tesis_sahibi'
   if (['sportif_direktor', 'sportif direktor', 'sportif direktör'].some((v) => r.includes(v))) return 'sportif_direktor'
-  if (['antrenor', 'antrenör'].some((v) => r.includes(v))) return 'antrenor'
+  if (['coach', 'antrenor', 'antrenör', 'trainer'].some((v) => r.includes(v))) return 'coach'
   if (['temizlik', 'cleaning', 'temizlik_personeli'].some((v) => r.includes(v))) return 'temizlik'
   if (['kayit_gorevlisi', 'kayit_personeli', 'kayıt personeli', 'kayit gorevlisi'].some((v) => r.includes(v))) return 'kayit_gorevlisi'
   if (VELI_VARIANTS.some((v) => v.toLowerCase() === r)) return 'veli'
@@ -78,11 +78,11 @@ export function resolveLoginRole(input: ResolveRoleInput): ResolvedRole {
 /** Rol → yönlendirme yolu */
 export const ROLE_TO_PATH: Record<ResolvedRole, string> = {
   patron: '/dashboard',
-  franchise: '/franchise',
+  tenant_owner: '/franchise',
   firma_sahibi: '/franchise',
   isletme_muduru: '/isletme-muduru',
   tesis_sahibi: '/isletme-muduru',
-  antrenor: '/antrenor',
+  coach: '/antrenor',
   sportif_direktor: '/sportif-direktor',
   temizlik: '/temizlik',
   kayit_gorevlisi: '/kayit',

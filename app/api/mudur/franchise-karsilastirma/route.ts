@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       .from('user_tenants')
       .select('role')
       .eq('user_id', user.id)
-      .in('role', ['owner', 'manager'])
+      .in('role', ['tenant_owner', 'owner', 'manager'])
       .limit(1)
       .maybeSingle()
     if (!userRole) return NextResponse.json({ error: 'Yetki yok' }, { status: 403 })
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       .from('user_tenants')
       .select('tenant_id')
       .eq('user_id', user.id)
-      .in('role', ['owner', 'manager'])
+      .in('role', ['tenant_owner', 'owner', 'manager'])
 
     const { data: ownedTenants } = await service
       .from('tenants')

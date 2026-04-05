@@ -11,6 +11,7 @@ const TESIS_ALLOWED_ROLES = [
   'isletme_muduru',
   'sportif_direktor',
   'patron',
+  'tenant_owner',
   'owner',
   'admin',
   'manager',
@@ -42,7 +43,7 @@ export async function checkTesisRole(userId: string): Promise<TesisRoleResult> {
     .eq('owner_id', userId)
     .limit(1)
     .maybeSingle()
-  if (t) return { allowed: true, role: 'owner', tenantId: t.id }
+  if (t) return { allowed: true, role: 'tenant_owner', tenantId: t.id }
 
   // 2) user_tenants.role
   const { data: ut } = await service

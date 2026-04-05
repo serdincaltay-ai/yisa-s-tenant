@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
     const { data: ut } = await service.from('user_tenants').select('role').eq('user_id', user.id).eq('tenant_id', tenantId ?? '').maybeSingle()
     const { data: t } = await service.from('tenants').select('id').eq('owner_id', user.id).maybeSingle()
 
-    const isAdmin = t || (ut?.role && ['admin', 'owner', 'manager'].includes(String(ut.role)))
-    const isPersonel = ut?.role && ['antrenor', 'tesis_muduru', 'sekreter', 'trainer'].includes(String(ut.role))
+    const isAdmin = t || (ut?.role && ['admin', 'tenant_owner', 'owner', 'manager'].includes(String(ut.role)))
+    const isPersonel = ut?.role && ['coach', 'antrenor', 'tesis_muduru', 'sekreter', 'trainer'].includes(String(ut.role))
     const { data: parentChild } = await service.from('athletes').select('id').eq('parent_user_id', user.id).limit(1).maybeSingle()
     const isVeli = !!parentChild
 
