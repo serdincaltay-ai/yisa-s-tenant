@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   }
 
   const config = await getTenantConfigWithOverrides(slug)
-  const msg = (message ?? '').toLowerCase()
+  const msg = (message ?? '').toLocaleLowerCase('tr')
 
   let reply = ''
 
