@@ -31,6 +31,7 @@ import { STANDART_PAKETLER, getDersProgrami, type TenantConfig } from "@/lib/ten
 import WeeklyScheduleGrid from "./WeeklyScheduleGrid"
 import RobotGreeting from "./RobotGreeting"
 import TenantTabletNav, { PREMIUM_TABLET_NAV } from "./TenantTabletNav"
+import ChatWidget from "@/components/ChatWidget"
 
 /* ------------------------------------------------------------------ */
 /*  Animasyon Yardimcilari                                             */
@@ -1367,6 +1368,12 @@ export default function PremiumTemplate({ config }: PremiumTemplateProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Chat Widget */}
+      <ChatWidget
+        tenantSlug={config.slug}
+        tenantName={config.ad}
+      />
 
       {/* Tablet Bottom Nav */}
       <TenantTabletNav items={PREMIUM_TABLET_NAV} onNavigate={scrollTo} />
