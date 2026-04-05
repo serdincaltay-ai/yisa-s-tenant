@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
         .from('user_tenants')
         .select('user_id')
         .eq('tenant_id', tenantId)
-        .eq('role', 'owner')
+        .in('role', ['tenant_owner', 'owner'])
         .limit(1)
 
       const ownerId = (ownerRows ?? [])[0]?.user_id as string | undefined
