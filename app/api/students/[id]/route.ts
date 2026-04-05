@@ -55,7 +55,7 @@ export async function GET(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
@@ -129,7 +129,7 @@ export async function PATCH(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .update(updates)
       .eq('id', id)
       .eq('tenant_id', tenantId)
@@ -167,7 +167,7 @@ export async function DELETE(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .update({ status: 'pasif' })
       .eq('id', id)
       .eq('tenant_id', tenantId)

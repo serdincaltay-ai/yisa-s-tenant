@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     const service = createServiceClient(url, key)
     let query = service
-      .from('students')
+      .from('athletes')
       .select('id, ad_soyad, tc_kimlik, dogum_tarihi, cinsiyet, veli_adi, veli_telefon, veli_email, brans, grup_id, saglik_notu, status, created_at', { count: 'exact' })
       .eq('tenant_id', tenantId)
 
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .insert({
         tenant_id: tenantId,
         ad_soyad: adSoyad,

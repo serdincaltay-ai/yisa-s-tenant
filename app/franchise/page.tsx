@@ -82,9 +82,9 @@ const mockStudents = [
 ]
 
 const mockTrainers = [
-  { id: 1, name: "Mehmet Yildiz", specialty: "Artistik Cimnastik", students: 28, rating: 4.8 },
-  { id: 2, name: "Ayse Celik", specialty: "Ritmik Cimnastik", students: 22, rating: 4.9 },
-  { id: 3, name: "Ali Korkmaz", specialty: "Trampolin", students: 18, rating: 4.7 },
+  { id: 1, name: "Mehmet Yildiz", specialty: "Artistik Cimnastik", athletes: 28, rating: 4.8 },
+  { id: 2, name: "Ayse Celik", specialty: "Ritmik Cimnastik", athletes: 22, rating: 4.9 },
+  { id: 3, name: "Ali Korkmaz", specialty: "Trampolin", athletes: 18, rating: 4.7 },
 ]
 
 const mockCOOProducts = [
@@ -493,9 +493,9 @@ function OverviewTab({ tenant, athletes, staff, onRefresh }: { tenant: TenantInf
                 <p className="text-sm text-muted-foreground">Ders programi icin once personel ekleyin.</p>
               ) : (
                 <>
-                  <ScheduleItem time="09:00" title="Baslangic Grubu" trainer={staff[0]?.name ?? "—"} students={0} />
-                  <ScheduleItem time="11:00" title="Orta Seviye" trainer={staff[1]?.name ?? "—"} students={0} />
-                  <ScheduleItem time="14:00" title="Ileri Seviye" trainer={staff[2]?.name ?? "—"} students={0} />
+                  <ScheduleItem time="09:00" title="Baslangic Grubu" trainer={staff[0]?.name ?? "—"} athletes={0} />
+                  <ScheduleItem time="11:00" title="Orta Seviye" trainer={staff[1]?.name ?? "—"} athletes={0} />
+                  <ScheduleItem time="14:00" title="Ileri Seviye" trainer={staff[2]?.name ?? "—"} athletes={0} />
                 </>
               )}
             </div>
@@ -560,7 +560,7 @@ function StatCard({ title, value, change, icon: Icon, color }: {
   )
 }
 
-function ScheduleItem({ time, title, trainer, students }: { time: string; title: string; trainer: string; students: number }) {
+function ScheduleItem({ time, title, trainer, athletes }: { time: string; title: string; trainer: string; athletes: number }) {
   return (
     <div className="flex items-center gap-4">
       <div className="w-14 text-center">
@@ -569,7 +569,7 @@ function ScheduleItem({ time, title, trainer, students }: { time: string; title:
       <div className="h-12 w-px bg-border" />
       <div className="flex-1">
         <p className="font-medium text-foreground">{title}</p>
-        <p className="text-sm text-muted-foreground">{trainer} - {students} ogrenci</p>
+        <p className="text-sm text-muted-foreground">{trainer} - {athletes} sporcu</p>
       </div>
     </div>
   )

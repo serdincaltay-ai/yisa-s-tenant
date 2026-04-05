@@ -15,7 +15,7 @@ export default function AntrenorDashboard() {
   const [data, setData] = useState<{
     bugunDersleri: BugunDers[]
     sporcuSayisi: number
-    today_students: TodayStudent[]
+    today_athletes: TodayStudent[]
     sonYoklamalar: YoklamaOzet[]
     bugunTarih: string
     haftalikDersSayisi?: number
@@ -34,7 +34,7 @@ export default function AntrenorDashboard() {
         setData({
           bugunDersleri: d.bugunDersleri ?? [],
           sporcuSayisi: d.sporcuSayisi ?? 0,
-          today_students: d.today_students ?? [],
+          today_athletes: d.today_athletes ?? [],
           sonYoklamalar: yoklamalar,
           bugunTarih: d.bugunTarih ?? '',
           haftalikDersSayisi: d.haftalikDersSayisi ?? 0,
@@ -55,7 +55,7 @@ export default function AntrenorDashboard() {
     )
   }
 
-  const d = data ?? { bugunDersleri: [], sporcuSayisi: 0, today_students: [], sonYoklamalar: [], bugunTarih: '', haftalikDersSayisi: 0, toplamYoklama: 0, devamOrani: 0, todayStudents: [] as StudentItem[] }
+  const d = data ?? { bugunDersleri: [], sporcuSayisi: 0, today_athletes: [], sonYoklamalar: [], bugunTarih: '', haftalikDersSayisi: 0, toplamYoklama: 0, devamOrani: 0, todayStudents: [] as StudentItem[] }
 
   return (
     <main className="p-4 space-y-4">

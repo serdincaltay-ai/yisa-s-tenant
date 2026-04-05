@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     const service = createServiceClient(url, key)
 
     let studentsQuery = service
-      .from('students')
+      .from('athletes')
       .select('id, ad_soyad, brans')
       .eq('tenant_id', tenantId)
       .eq('status', 'aktif')
