@@ -60,23 +60,23 @@ export async function GET(req: NextRequest) {
     const service = createServiceClient(url, key)
     let query = service
       .from('athletes')
-      .select('id, ad_soyad, tc_kimlik, dogum_tarihi, cinsiyet, veli_adi, veli_telefon, veli_email, brans, grup_id, saglik_notu, status, created_at', { count: 'exact' })
+      .select('id, name, surname, birth_date, gender, branch, level, parent_name, parent_phone, parent_email, notes, status, created_at', { count: 'exact' })
       .eq('tenant_id', tenantId)
 
-    if (statusFilter === 'aktif' || statusFilter === 'pasif') {
+    if (statusFilter === 'active' || statusFilter === 'inactive') {
       query = query.eq('status', statusFilter)
     }
 
     if (q) {
       const safe = q.replace(/'/g, "''")
       if (/^\d{11}$/.test(q)) {
-        query = query.or(`ad_soyad.ilike.%${safe}%,tc_kimlik.eq.${q},veli_telefon.ilike.%${safe}%`)
+        query = query.or(`name.ilike.%${safe}%,surname.ilike.%${safe}%,parent_phone.ilike.%${safe}%`)
       } else {
-        query = query.or(`ad_soyad.ilike.%${safe}%,veli_telefon.ilike.%${safe}%`)
+        query = query.or(`name.ilike.%${safe}%,surname.ilike.%${safe}%,parent_phone.ilike.%${safe}%`)
       }
     }
 
-    const validSortColumns = ['ad_soyad', 'created_at', 'dogum_tarihi', 'brans']
+    const validSortColumns = ['name', 'created_at', 'birth_date', 'branch']
     const orderColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at'
 
     const { data, error, count } = await query
@@ -136,19 +136,18 @@ export async function POST(req: NextRequest) {
       .from('athletes')
       .insert({
         tenant_id: tenantId,
-        ad_soyad: adSoyad,
-        tc_kimlik: tcKimlik,
-        dogum_tarihi: dogumTarihi,
-        cinsiyet,
-        veli_adi: veliAdi,
-        veli_telefon: veliTelefon,
-        veli_email: veliEmail,
-        brans,
-        grup_id: grupId,
-        saglik_notu: saglikNotu,
-        status: 'aktif',
-      })
-      .select('id, ad_soyad, tc_kimlik, created_at')
+        name: adSoyad.split(' ')[0] || adSoyad,
+        surname: adSoyad.split(' ').slice(1).join(' ') || null,
+        birth_date: dogumTarihi || null,
+        gender: cinsiyet,
+        parent_name: veliAdi,
+        parent_phone: veliTelefon,
+        parent_email: veliEmail,
+        branch: brans,
+        notes: saglikNotu,
+        status: 'active',
+      } as Record<string, unknown>)
+      .select('id, name, surname, created_at')
       .single()
 
     if (error) {

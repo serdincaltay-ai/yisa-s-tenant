@@ -108,16 +108,18 @@ export async function PATCH(
     }
 
     const updates: Record<string, unknown> = {}
-    if (adSoyad !== undefined) updates.ad_soyad = adSoyad
-    if (tcKimlik !== undefined) updates.tc_kimlik = tcKimlik
-    if (dogumTarihi !== undefined) updates.dogum_tarihi = dogumTarihi
-    if (cinsiyet !== undefined) updates.cinsiyet = cinsiyet
-    if (veliAdi !== undefined) updates.veli_adi = veliAdi
-    if (veliTelefon !== undefined) updates.veli_telefon = veliTelefon
-    if (veliEmail !== undefined) updates.veli_email = veliEmail
-    if (brans !== undefined) updates.brans = brans
-    if (grupId !== undefined) updates.grup_id = grupId
-    if (saglikNotu !== undefined) updates.saglik_notu = saglikNotu
+    if (adSoyad !== undefined) {
+      updates.name = adSoyad.split(' ')[0] || adSoyad
+      const rest = adSoyad.split(' ').slice(1).join(' ')
+      if (rest) updates.surname = rest
+    }
+    if (dogumTarihi !== undefined) updates.birth_date = dogumTarihi
+    if (cinsiyet !== undefined) updates.gender = cinsiyet
+    if (veliAdi !== undefined) updates.parent_name = veliAdi
+    if (veliTelefon !== undefined) updates.parent_phone = veliTelefon
+    if (veliEmail !== undefined) updates.parent_email = veliEmail
+    if (brans !== undefined) updates.branch = brans
+    if (saglikNotu !== undefined) updates.notes = saglikNotu
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'Güncellenecek alan yok' }, { status: 400 })
@@ -168,7 +170,7 @@ export async function DELETE(
     const service = createServiceClient(url, key)
     const { data, error } = await service
       .from('athletes')
-      .update({ status: 'pasif' })
+      .update({ status: 'inactive' })
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .select('id, status')
