@@ -31,6 +31,7 @@ import { STANDART_PAKETLER, getDersProgrami, type TenantConfig } from "@/lib/ten
 import WeeklyScheduleGrid from "./WeeklyScheduleGrid"
 import RobotGreeting from "./RobotGreeting"
 import TenantTabletNav, { PREMIUM_TABLET_NAV } from "./TenantTabletNav"
+import ChatWidget from "@/components/ChatWidget"
 
 /* ------------------------------------------------------------------ */
 /*  Animasyon Yardimcilari                                             */
@@ -1272,7 +1273,7 @@ export default function PremiumTemplate({ config }: PremiumTemplateProps) {
           href={`https://wa.me/${config.whatsapp}?text=Merhaba, bilgi almak istiyorum.`}
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-2xl shadow-green-500/30 hover:bg-green-600 hover:scale-110 transition-all md:bottom-20 lg:bottom-6"
+          className="fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-2xl shadow-green-500/30 hover:bg-green-600 hover:scale-110 transition-all md:bottom-36 lg:bottom-24"
         >
           <MessageCircle className="h-7 w-7" />
         </a>
@@ -1367,6 +1368,12 @@ export default function PremiumTemplate({ config }: PremiumTemplateProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Chat Widget */}
+      <ChatWidget
+        tenantSlug={config.slug}
+        tenantName={config.ad}
+      />
 
       {/* Tablet Bottom Nav */}
       <TenantTabletNav items={PREMIUM_TABLET_NAV} onNavigate={scrollTo} />

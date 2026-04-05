@@ -88,8 +88,15 @@ const RESPONSES: Record<string, string[]> = {
   ],
 }
 
-export default function ChatWidget() {
+interface ChatWidgetProps {
+  tenantSlug?: string
+  tenantName?: string
+  primaryColor?: string
+}
+
+export default function ChatWidget({ tenantSlug, tenantName, primaryColor }: ChatWidgetProps = {}) {
   const pathname = usePathname()
+  const isPublicMode = !!tenantSlug
   const [isOpen, setIsOpen] = useState(false)
   const [userType, setUserType] = useState<UserType>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MSG])
@@ -222,7 +229,37 @@ export default function ChatWidget() {
     setMessages((prev) => [...prev, userMsg])
     setInput("")
 
-    // Auto-reply based on userType
+    // Public mode: use /api/robot/chat endpoint
+    if (isPublicMode && tenantSlug) {
+      autoReplyTimerRef.current = setTimeout(async () => {
+        try {
+          const res = await fetch('/api/robot/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text, slug: tenantSlug }),
+          })
+          const json = await res.json()
+          const botMsg: ChatMessage = {
+            id: `bot-${Date.now()}`,
+            role: "bot",
+            text: json.reply || 'Anlayamadım, tekrar dener misiniz?',
+            ts: Date.now(),
+          }
+          setMessages((prev) => [...prev, botMsg])
+        } catch {
+          const botMsg: ChatMessage = {
+            id: `bot-${Date.now()}`,
+            role: "bot",
+            text: 'Bağlantı hatası, lütfen tekrar deneyin.',
+            ts: Date.now(),
+          }
+          setMessages((prev) => [...prev, botMsg])
+        }
+      }, 300)
+      return
+    }
+
+    // Auto-reply based on userType (authenticated mode)
     autoReplyTimerRef.current = setTimeout(() => {
       const pool = RESPONSES[userType || "franchise"] || RESPONSES.franchise
       const currentIdx = responseIdxRef.current
@@ -339,8 +376,8 @@ export default function ChatWidget() {
             </div>
           </div>
 
-          {/* User Type Selection */}
-          {!userType && (
+          {/* User Type Selection (hidden in public mode — goes straight to chat) */}
+          {!userType && !isPublicMode && (
             <div className="p-4 space-y-2 border-b border-zinc-800">
               <p className="text-xs text-zinc-400 mb-2">
                 Sizi doğru yönlendirebilmem için kim olduğunuzu seçin:
@@ -444,7 +481,7 @@ export default function ChatWidget() {
                     : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
                 }`}
                 title={stt.isListening ? "Kaydı durdur" : "Sesli mesaj"}
-                disabled={!userType}
+                disabled={!userType && !isPublicMode}
               >
                 {stt.isListening ? (
                   <MicOff className="w-4 h-4" />
@@ -461,16 +498,16 @@ export default function ChatWidget() {
               placeholder={
                 stt.isListening
                   ? "Dinleniyor..."
-                  : userType
+                  : (userType || isPublicMode)
                     ? "Mesajınızı yazın..."
                     : "Önce yukarıdan profil seçin..."
               }
-              disabled={!userType}
+              disabled={!userType && !isPublicMode}
               className="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 disabled:opacity-40"
             />
             <button
               onClick={handleSend}
-              disabled={(!input.trim() && !stt.interimTranscript) || !userType}
+              disabled={(!input.trim() && !stt.interimTranscript) || (!userType && !isPublicMode)}
               className="p-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
             >
               <Send className="w-4 h-4" />
