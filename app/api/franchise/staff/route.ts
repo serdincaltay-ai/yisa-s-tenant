@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
       .from('staff')
       .select('id, name, surname, email, phone, role, branch, branch_id, is_active, created_at, birth_date, address, city, district, previous_work, chronic_condition, has_driving_license, languages, employment_type, employment_start_date, is_competitive_coach, license_type, bio, photo_url, user_id')
       .eq('tenant_id', tenantId)
-    if (roleFilter && ['admin', 'manager', 'trainer', 'receptionist', 'other', 'cleaning'].includes(roleFilter)) {
+    if (roleFilter && ['admin', 'manager', 'coach', 'trainer', 'receptionist', 'other', 'cleaning'].includes(roleFilter)) {
       query = query.eq('role', roleFilter)
     }
     if (branchIdFilter) {
@@ -79,9 +79,9 @@ export async function POST(req: NextRequest) {
     const surname = typeof body.surname === 'string' ? body.surname.trim() : null
     const email = typeof body.email === 'string' ? body.email.trim() : null
     const phone = typeof body.phone === 'string' ? body.phone.trim() : null
-    const role = typeof body.role === 'string' && ['admin', 'manager', 'trainer', 'receptionist', 'other', 'cleaning'].includes(body.role)
+    const role = typeof body.role === 'string' && ['admin', 'manager', 'coach', 'trainer', 'receptionist', 'other', 'cleaning'].includes(body.role)
       ? body.role
-      : 'trainer'
+      : 'coach'
     const branch = typeof body.branch === 'string' ? body.branch.trim() : null
     const birth_date = body.birth_date && /^\d{4}-\d{2}-\d{2}$/.test(String(body.birth_date)) ? body.birth_date : null
     const address = typeof body.address === 'string' ? body.address.trim() : null

@@ -25,16 +25,6 @@ async function getTenantId(userId: string): Promise<string | null> {
   return t?.id ?? null
 }
 
-function validateTcKimlik(tc: string): boolean {
-  if (!/^\d{11}$/.test(tc)) return false
-  const digits = tc.split('').map(Number)
-  const t1 = (digits[0] + digits[2] + digits[4] + digits[6] + digits[8]) * 7
-  const t2 = digits[1] + digits[3] + digits[5] + digits[7]
-  if ((t1 - t2) % 10 !== digits[9]) return false
-  const t3 = digits.slice(0, 10).reduce((a, b) => a + b, 0)
-  if (t3 % 10 !== digits[10]) return false
-  return true
-}
 
 export async function GET(
   _req: NextRequest,
@@ -55,7 +45,7 @@ export async function GET(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
@@ -85,21 +75,15 @@ export async function PATCH(
 
     const body = await req.json()
     const adSoyad = typeof body.ad_soyad === 'string' ? body.ad_soyad.trim() : undefined
-    const tcKimlik = typeof body.tc_kimlik === 'string' ? body.tc_kimlik.replace(/\D/g, '') : undefined
     const dogumTarihi = typeof body.dogum_tarihi === 'string' ? body.dogum_tarihi : undefined
     const cinsiyet = typeof body.cinsiyet === 'string' && ['E', 'K', 'diger'].includes(body.cinsiyet) ? body.cinsiyet : undefined
     const veliAdi = typeof body.veli_adi === 'string' ? body.veli_adi.trim() : undefined
     const veliTelefon = typeof body.veli_telefon === 'string' ? body.veli_telefon.trim() : undefined
     const veliEmail = typeof body.veli_email === 'string' ? body.veli_email.trim() : undefined
     const brans = typeof body.brans === 'string' ? body.brans.trim() : undefined
-    const grupId = body.grup_id === null ? null : (typeof body.grup_id === 'string' && body.grup_id ? body.grup_id : undefined)
     const saglikNotu = typeof body.saglik_notu === 'string' ? body.saglik_notu.trim() : undefined
 
     if (adSoyad !== undefined && !adSoyad) return NextResponse.json({ error: 'Ad Soyad zorunludur' }, { status: 400 })
-    if (tcKimlik !== undefined) {
-      if (tcKimlik.length !== 11) return NextResponse.json({ error: 'TC Kimlik No 11 hane olmalıdır' }, { status: 400 })
-      if (!validateTcKimlik(tcKimlik)) return NextResponse.json({ error: 'Geçersiz TC Kimlik No' }, { status: 400 })
-    }
     if (dogumTarihi !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(dogumTarihi)) {
       return NextResponse.json({ error: 'Geçersiz doğum tarihi' }, { status: 400 })
     }
@@ -108,16 +92,18 @@ export async function PATCH(
     }
 
     const updates: Record<string, unknown> = {}
-    if (adSoyad !== undefined) updates.ad_soyad = adSoyad
-    if (tcKimlik !== undefined) updates.tc_kimlik = tcKimlik
-    if (dogumTarihi !== undefined) updates.dogum_tarihi = dogumTarihi
-    if (cinsiyet !== undefined) updates.cinsiyet = cinsiyet
-    if (veliAdi !== undefined) updates.veli_adi = veliAdi
-    if (veliTelefon !== undefined) updates.veli_telefon = veliTelefon
-    if (veliEmail !== undefined) updates.veli_email = veliEmail
-    if (brans !== undefined) updates.brans = brans
-    if (grupId !== undefined) updates.grup_id = grupId
-    if (saglikNotu !== undefined) updates.saglik_notu = saglikNotu
+    if (adSoyad !== undefined) {
+      updates.name = adSoyad.split(' ')[0] || adSoyad
+      const rest = adSoyad.split(' ').slice(1).join(' ')
+      updates.surname = rest || null
+    }
+    if (dogumTarihi !== undefined) updates.birth_date = dogumTarihi
+    if (cinsiyet !== undefined) updates.gender = cinsiyet
+    if (veliAdi !== undefined) updates.parent_name = veliAdi
+    if (veliTelefon !== undefined) updates.parent_phone = veliTelefon
+    if (veliEmail !== undefined) updates.parent_email = veliEmail
+    if (brans !== undefined) updates.branch = brans
+    if (saglikNotu !== undefined) updates.notes = saglikNotu
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'Güncellenecek alan yok' }, { status: 400 })
@@ -129,7 +115,7 @@ export async function PATCH(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
+      .from('athletes')
       .update(updates)
       .eq('id', id)
       .eq('tenant_id', tenantId)
@@ -137,7 +123,7 @@ export async function PATCH(
       .maybeSingle()
 
     if (error) {
-      if (error.code === '23505') return NextResponse.json({ error: 'Bu TC Kimlik No zaten kayıtlı' }, { status: 400 })
+      if (error.code === '23505') return NextResponse.json({ error: 'Bu kayıt zaten mevcut' }, { status: 400 })
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
     if (!data) return NextResponse.json({ error: 'Öğrenci bulunamadı' }, { status: 404 })
@@ -167,8 +153,8 @@ export async function DELETE(
 
     const service = createServiceClient(url, key)
     const { data, error } = await service
-      .from('students')
-      .update({ status: 'pasif' })
+      .from('athletes')
+      .update({ status: 'inactive' })
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .select('id, status')

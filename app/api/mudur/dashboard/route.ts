@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       .select('role')
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
-      .in('role', ['owner', 'manager'])
+      .in('role', ['tenant_owner', 'owner', 'manager'])
       .limit(1)
       .maybeSingle()
     if (!userRole) return NextResponse.json({ error: 'Yetki yok' }, { status: 403 })
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     const [athletesRes, coachesRes, schedulesRes, paymentsRes, attendanceRes] = await Promise.all([
       service.from('athletes').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId),
-      service.from('user_tenants').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId).eq('role', 'coach'),
+      service.from('user_tenants').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId).in('role', ['coach', 'antrenor', 'trainer']),
       service.from('tenant_schedule').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId),
       service.from('payments').select('amount, status').eq('tenant_id', tenantId).gte('created_at', ayStr),
       service.from('attendance').select('status').eq('tenant_id', tenantId).gte('lesson_date', ayStr),

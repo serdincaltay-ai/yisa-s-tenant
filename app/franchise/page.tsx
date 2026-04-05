@@ -82,9 +82,9 @@ const mockStudents = [
 ]
 
 const mockTrainers = [
-  { id: 1, name: "Mehmet Yildiz", specialty: "Artistik Cimnastik", students: 28, rating: 4.8 },
-  { id: 2, name: "Ayse Celik", specialty: "Ritmik Cimnastik", students: 22, rating: 4.9 },
-  { id: 3, name: "Ali Korkmaz", specialty: "Trampolin", students: 18, rating: 4.7 },
+  { id: 1, name: "Mehmet Yildiz", specialty: "Artistik Cimnastik", athletes: 28, rating: 4.8 },
+  { id: 2, name: "Ayse Celik", specialty: "Ritmik Cimnastik", athletes: 22, rating: 4.9 },
+  { id: 3, name: "Ali Korkmaz", specialty: "Trampolin", athletes: 18, rating: 4.7 },
 ]
 
 const mockCOOProducts = [
@@ -493,9 +493,9 @@ function OverviewTab({ tenant, athletes, staff, onRefresh }: { tenant: TenantInf
                 <p className="text-sm text-muted-foreground">Ders programi icin once personel ekleyin.</p>
               ) : (
                 <>
-                  <ScheduleItem time="09:00" title="Baslangic Grubu" trainer={staff[0]?.name ?? "—"} students={0} />
-                  <ScheduleItem time="11:00" title="Orta Seviye" trainer={staff[1]?.name ?? "—"} students={0} />
-                  <ScheduleItem time="14:00" title="Ileri Seviye" trainer={staff[2]?.name ?? "—"} students={0} />
+                  <ScheduleItem time="09:00" title="Baslangic Grubu" trainer={staff[0]?.name ?? "—"} athletes={0} />
+                  <ScheduleItem time="11:00" title="Orta Seviye" trainer={staff[1]?.name ?? "—"} athletes={0} />
+                  <ScheduleItem time="14:00" title="Ileri Seviye" trainer={staff[2]?.name ?? "—"} athletes={0} />
                 </>
               )}
             </div>
@@ -560,7 +560,7 @@ function StatCard({ title, value, change, icon: Icon, color }: {
   )
 }
 
-function ScheduleItem({ time, title, trainer, students }: { time: string; title: string; trainer: string; students: number }) {
+function ScheduleItem({ time, title, trainer, athletes }: { time: string; title: string; trainer: string; athletes: number }) {
   return (
     <div className="flex items-center gap-4">
       <div className="w-14 text-center">
@@ -569,7 +569,7 @@ function ScheduleItem({ time, title, trainer, students }: { time: string; title:
       <div className="h-12 w-px bg-border" />
       <div className="flex-1">
         <p className="font-medium text-foreground">{title}</p>
-        <p className="text-sm text-muted-foreground">{trainer} - {students} ogrenci</p>
+        <p className="text-sm text-muted-foreground">{trainer} - {athletes} sporcu</p>
       </div>
     </div>
   )
@@ -584,9 +584,9 @@ function StudentsTab({ athletes, staff, onRefresh, hasTenant }: { athletes: Athl
   const [deleting, setDeleting] = useState<string | null>(null)
   const [assigningTrainer, setAssigningTrainer] = useState<string | null>(null)
   const [selectedTrainer, setSelectedTrainer] = useState<string>("")
-  const trainers = staff.filter(s => s.role === "trainer" || s.role === "manager")
+    const trainers = staff.filter(s => s.role === "coach" || s.role === "trainer" || s.role === "manager")
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (sending || !form.name.trim()) return
     setSending(true)
@@ -786,7 +786,7 @@ function StudentsTab({ athletes, staff, onRefresh, hasTenant }: { athletes: Athl
 
 function TrainersTab({ staff, onRefresh }: { staff: StaffMember[]; onRefresh: () => void }) {
   const router = useRouter()
-  const trainers = staff.filter(s => s.role === "trainer" || s.role === "manager")
+  const trainers = staff.filter(s => s.role === "coach" || s.role === "trainer" || s.role === "manager")
   const [deactivating, setDeactivating] = useState<string | null>(null)
 
   const handleDeactivate = async (id: string) => {
@@ -1674,12 +1674,12 @@ function ReportsTab() {
   )
 }
 
-type PersonelRole = "trainer" | "manager" | "admin" | "receptionist" | "cleaning" | "other"
+type PersonelRole = "coach" | "trainer" | "manager" | "admin" | "receptionist" | "cleaning" | "other"
 const personelFormDefaults: {
   name: string; surname: string; email: string; phone: string; role: PersonelRole; branch: string;
   birth_date: string; address: string; city: string; district: string; previous_work: string; chronic_condition: string; has_driving_license: boolean; languages: string;
 } = {
-  name: "", surname: "", email: "", phone: "", role: "trainer", branch: "",
+  name: "", surname: "", email: "", phone: "", role: "coach", branch: "",
   birth_date: "", address: "", city: "", district: "", previous_work: "", chronic_condition: "", has_driving_license: false, languages: "",
 }
 
@@ -1762,7 +1762,8 @@ function PersonelTab({ staff, onRefresh, hasTenant }: { staff: StaffMember[]; on
               <div className="space-y-2">
                 <Label>Rol</Label>
                 <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.role} onChange={e => setForm({ ...form, role: e.target.value as PersonelRole })}>
-                  <option value="trainer">Antrenör</option>
+                  <option value="coach">Antrenör</option>
+                  <option value="trainer">Antrenör (Eski)</option>
                   <option value="manager">Tesis Muduru</option>
                   <option value="admin">Admin</option>
                   <option value="receptionist">Kayit</option>

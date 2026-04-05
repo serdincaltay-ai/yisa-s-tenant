@@ -14,7 +14,7 @@ const THEME_COLORS = ['#1a1a2e', '#0f172a', '#1e293b', '#0c4a6e', '#065f46', '#4
 const STAFF_ROLES = [
   { value: 'admin', label: 'Yönetici' },
   { value: 'manager', label: 'Tesis Müdürü' },
-  { value: 'trainer', label: 'Antrenör' },
+  { value: 'coach', label: 'Antrenör' },
   { value: 'receptionist', label: 'Kayıt Personeli' },
   { value: 'cleaning', label: 'Temizlik Personeli' },
   { value: 'other', label: 'Diğer' },
@@ -65,7 +65,7 @@ export default function KurulumPage() {
   const [branches, setBranches] = useState<BranchEntry[]>([{ name: '' }])
 
   // Adım 4: Personel davet
-  const [staffInvites, setStaffInvites] = useState<StaffInvite[]>([{ email: '', role: 'trainer' }])
+  const [staffInvites, setStaffInvites] = useState<StaffInvite[]>([{ email: '', role: 'coach' }])
   const [inviteSending, setInviteSending] = useState(false)
   const [inviteResults, setInviteResults] = useState<string[]>([])
 
@@ -238,7 +238,7 @@ export default function KurulumPage() {
   }
 
   // --- Adım 4: Personel davet ---
-  const addInvite = () => setStaffInvites((s) => [...s, { email: '', role: 'trainer' }])
+  const addInvite = () => setStaffInvites((s) => [...s, { email: '', role: 'coach' }])
   const removeInvite = (idx: number) => setStaffInvites((s) => s.filter((_, i) => i !== idx))
   const updateInvite = (idx: number, field: keyof StaffInvite, value: string) => {
     setStaffInvites((prev) => prev.map((s, i) => (i === idx ? { ...s, [field]: value } : s)))

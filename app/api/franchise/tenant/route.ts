@@ -134,7 +134,7 @@ export async function PATCH(req: NextRequest) {
     } else {
       // Check role from user_tenants
       const r = String(ut?.role ?? '').toLowerCase()
-      isAuthorized = ['owner', 'admin', 'manager', 'tesis_muduru'].includes(r)
+      isAuthorized = ['tenant_owner', 'owner', 'admin', 'manager', 'tesis_muduru'].includes(r)
     }
 
     if (!tenantId) {

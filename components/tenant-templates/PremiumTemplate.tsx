@@ -304,9 +304,13 @@ export default function PremiumTemplate({ config }: PremiumTemplateProps) {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-300 font-black text-sm text-black shadow-lg">
-              {config.logoBadge}
-            </div>
+            {config.logoUrl ? (
+              <img src={config.logoUrl} alt={config.kisa} className="h-10 w-10 rounded-xl object-contain shadow-lg" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-300 font-black text-sm text-black shadow-lg">
+                {config.logoBadge}
+              </div>
+            )}
             <div>
               <p className="font-bold text-sm leading-tight text-white">
                 {config.kisa}
@@ -1175,9 +1179,13 @@ export default function PremiumTemplate({ config }: PremiumTemplateProps) {
           <div className="grid gap-8 md:grid-cols-3">
             <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-300 font-black text-sm text-black">
-                  {config.logoBadge}
-                </div>
+                {config.logoUrl ? (
+                  <img src={config.logoUrl} alt={config.kisa} className="h-10 w-10 rounded-xl object-contain" />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-300 font-black text-sm text-black">
+                    {config.logoBadge}
+                  </div>
+                )}
                 <div>
                   <p className="font-bold text-white">{config.kisa}</p>
                   <p className="text-xs text-gray-600">

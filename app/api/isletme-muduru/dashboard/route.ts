@@ -10,6 +10,7 @@ import { getTenantIdWithFallback } from '@/lib/franchise-tenant'
 export const dynamic = 'force-dynamic'
 
 const ROL_LABELS: Record<string, string> = {
+  tenant_owner: 'Tesis Sahibi',
   owner: 'Tesis Sahibi',
   admin: 'Yönetici',
   manager: 'Müdür',
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle()
 
-    const allowedRoles = ['tesis_muduru', 'isletme_muduru', 'manager', 'owner', 'admin']
+    const allowedRoles = ['tesis_muduru', 'isletme_muduru', 'manager', 'tenant_owner', 'owner', 'admin']
     const rawRole = userRole?.role ? String(userRole.role).toLowerCase() : null
 
     const { data: ownerCheck } = await service

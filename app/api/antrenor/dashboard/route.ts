@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const schedules = schedulesRes.data ?? []
     const sporcuSayisi = athletesRes.count ?? 0
     const athleteList = allAthletesRes.data ?? []
-    const today_students = athleteList.map((a: { id: string; name?: string; surname?: string | null }) => ({
+    const today_athletes = athleteList.map((a: { id: string; name?: string; surname?: string | null }) => ({
       id: a.id,
       ad_soyad: [a.name, a.surname].filter(Boolean).join(' ').trim() || '—',
     }))
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       bugunDersleri: derslerWithStudents,
       sporcuSayisi,
-      today_students,
+      today_athletes,
       sonYoklamalar: Object.entries(sonYoklamalar).slice(0, 7).map(([tarih, v]) => ({ tarih, ...v })),
       bugunTarih: bugunStr,
       haftalikDersSayisi: weeklyRes.count ?? 0,

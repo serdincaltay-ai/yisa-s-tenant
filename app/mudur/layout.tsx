@@ -28,7 +28,7 @@ export default function MudurLayout({ children }: { children: React.ReactNode })
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const role = d?.role
-      if (role !== 'manager' && role !== 'owner') {
+      if (role !== 'manager' && role !== 'owner' && role !== 'tenant_owner') {
         router.replace('/panel')
         return
       }

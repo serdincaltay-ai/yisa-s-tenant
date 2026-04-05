@@ -26,7 +26,7 @@ export async function GET() {
       .from('user_tenants')
       .select('role')
       .eq('user_id', user.id)
-      .in('role', ['owner', 'patron'])
+      .in('role', ['tenant_owner', 'owner', 'patron'])
       .limit(1)
       .maybeSingle()
     if (!userRole) return NextResponse.json({ error: 'Yetki yok' }, { status: 403 })

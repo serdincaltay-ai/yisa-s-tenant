@@ -40,6 +40,7 @@ export async function login(formData: FormData) {
       case "tesis_sahibi":
         redirect("/tesis")
       case "antrenor":
+      case "coach":
         redirect("/antrenor")
       default:
         redirect("/veli")

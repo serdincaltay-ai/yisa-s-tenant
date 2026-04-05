@@ -37,7 +37,7 @@ export async function PATCH(
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
       .maybeSingle()
-    if (!roleCheck || !['patron', 'franchise', 'mudur'].includes(roleCheck.role)) {
+    if (!roleCheck || !['patron', 'tenant_owner', 'franchise', 'mudur'].includes(roleCheck.role)) {
       return NextResponse.json({ error: 'Yetki yetersiz' }, { status: 403 })
     }
 

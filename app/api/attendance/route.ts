@@ -39,14 +39,14 @@ export async function GET(req: NextRequest) {
     const service = createServiceClient(url, key)
 
     let studentsQuery = service
-      .from('students')
-      .select('id, ad_soyad, brans')
+      .from('athletes')
+      .select('id, name, surname, branch')
       .eq('tenant_id', tenantId)
-      .eq('status', 'aktif')
-      .order('ad_soyad', { ascending: true })
+      .eq('status', 'active')
+      .order('name', { ascending: true })
 
     if (brans) {
-      studentsQuery = studentsQuery.eq('brans', brans)
+      studentsQuery = studentsQuery.eq('branch', brans)
     }
 
     const { data: students, error: studentsError } = await studentsQuery
@@ -62,12 +62,12 @@ export async function GET(req: NextRequest) {
     if (attError) return NextResponse.json({ items: [], students: students ?? [] })
 
     const attMap = new Map((attendanceRows ?? []).map((r: { student_id: string }) => [r.student_id, r]))
-    const items = (students ?? []).map((s: { id: string; ad_soyad: string | null; brans: string | null }) => {
+    const items = (students ?? []).map((s: { id: string; name: string | null; surname: string | null; branch: string | null }) => {
       const att = attMap.get(s.id) as unknown as { id: string; status: string; note: string | null; seans_dustu: boolean } | undefined
       return {
         student_id: s.id,
-        ad_soyad: s.ad_soyad,
-        brans: s.brans,
+        ad_soyad: [s.name, s.surname].filter(Boolean).join(' '),
+        brans: s.branch,
         attendance_id: att?.id,
         status: att?.status ?? 'katilmadi',
         note: att?.note ?? null,

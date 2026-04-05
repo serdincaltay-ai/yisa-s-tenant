@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle()
 
-    const allowedRoles = ['sportif_direktor', 'owner', 'admin', 'manager']
+    const allowedRoles = ['sportif_direktor', 'tenant_owner', 'owner', 'admin', 'manager']
     const rawRole = userRole?.role ? String(userRole.role).toLowerCase() : null
 
     // Ayrıca tenants.owner_id kontrol et

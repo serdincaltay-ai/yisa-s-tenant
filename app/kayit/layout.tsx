@@ -29,7 +29,7 @@ export default function KayitLayout({ children }: { children: React.ReactNode })
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const raw = d?.rawRole ?? d?.role
-      if (!['kayit_gorevlisi', 'receptionist', 'kasa', 'owner', 'admin', 'manager', 'tesis_muduru'].includes(raw)) {
+      if (!['kayit_gorevlisi', 'receptionist', 'kasa', 'tenant_owner', 'owner', 'admin', 'manager', 'tesis_muduru'].includes(raw)) {
         router.replace('/franchise')
         return
       }

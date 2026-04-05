@@ -27,6 +27,8 @@ export interface TenantConfig {
   template: TemplateType
   /** Logo kısa metni (navbar/badge) */
   logoBadge: string
+  /** Logo URL (DB'den gelen tam URL — varsa img olarak kullanılır) */
+  logoUrl?: string | null
   /** Üst başlık (kurum adı) */
   ustBaslik: string
   /** Federasyon bilgileri (opsiyonel) */

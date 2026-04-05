@@ -119,7 +119,7 @@ async function setupUser(ctx: ProvisioningContext): Promise<void> {
       // Link existing user to tenant
       await supabase.from('tenants').update({ owner_id: existingUser.id }).eq('id', tenantId)
       await supabase.from('user_tenants').upsert(
-        { user_id: existingUser.id, tenant_id: tenantId, role: 'owner' },
+        { user_id: existingUser.id, tenant_id: tenantId, role: 'tenant_owner' },
         { onConflict: 'user_id,tenant_id' }
       )
       ctx.userId = existingUser.id
@@ -135,13 +135,13 @@ async function setupUser(ctx: ProvisioningContext): Promise<void> {
         email: reqEmail,
         password: tempPassword,
         email_confirm: true,
-        user_metadata: { role: 'franchise', tenant_slug: slug },
+        user_metadata: { role: 'tenant_owner', tenant_slug: slug },
       })
 
       if (!createErr && newUser?.user) {
         await supabase.from('tenants').update({ owner_id: newUser.user.id }).eq('id', tenantId)
         await supabase.from('user_tenants').upsert(
-          { user_id: newUser.user.id, tenant_id: tenantId, role: 'owner' },
+          { user_id: newUser.user.id, tenant_id: tenantId, role: 'tenant_owner' },
           { onConflict: 'user_id,tenant_id' }
         )
         ctx.userId = newUser.user.id
