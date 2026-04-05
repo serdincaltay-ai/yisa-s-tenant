@@ -481,7 +481,7 @@ export default function ChatWidget({ tenantSlug, tenantName, primaryColor }: Cha
                     : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
                 }`}
                 title={stt.isListening ? "Kaydı durdur" : "Sesli mesaj"}
-                disabled={!userType}
+                disabled={!userType && !isPublicMode}
               >
                 {stt.isListening ? (
                   <MicOff className="w-4 h-4" />
@@ -498,7 +498,7 @@ export default function ChatWidget({ tenantSlug, tenantName, primaryColor }: Cha
               placeholder={
                 stt.isListening
                   ? "Dinleniyor..."
-                  : userType
+                  : (userType || isPublicMode)
                     ? "Mesajınızı yazın..."
                     : "Önce yukarıdan profil seçin..."
               }
