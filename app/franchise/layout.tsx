@@ -13,9 +13,9 @@ import { BranchProvider } from '@/lib/context/branch-context'
  * cleaning / temizlik → sadece: temizlik
  */
 /** rawRole values from user_tenants.role — used for granular access control */
-type RawRole = 'owner' | 'admin' | 'manager' | 'tesis_muduru' | 'kasa' | 'coach' | 'antrenor' | 'trainer' | 'receptionist' | 'kayit_gorevlisi' | 'cleaning' | 'temizlik' | 'sportif_direktor' | 'isletme_muduru'
+type RawRole = 'tenant_owner' | 'owner' | 'admin' | 'manager' | 'tesis_muduru' | 'kasa' | 'coach' | 'antrenor' | 'trainer' | 'receptionist' | 'kayit_gorevlisi' | 'cleaning' | 'temizlik' | 'sportif_direktor' | 'isletme_muduru'
 
-const FULL_ACCESS_ROLES: RawRole[] = ['owner', 'admin', 'manager', 'tesis_muduru', 'kasa']
+const FULL_ACCESS_ROLES: RawRole[] = ['tenant_owner', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa']
 
 /** Routes each restricted role is allowed to access under /franchise */
 const ROLE_ALLOWED_ROUTES: Record<string, string[]> = {
