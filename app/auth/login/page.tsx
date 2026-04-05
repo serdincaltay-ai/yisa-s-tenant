@@ -105,7 +105,7 @@ function LoginForm() {
 
       const path = ROLE_TO_PATH[role] ?? '/veli'
       const panel = meta.panel as string | undefined
-      const finalPath = (role === 'tenant_owner' || role === 'franchise') && panel === 'tesis' ? '/tesis' : path
+      const finalPath = role === 'tenant_owner' && panel === 'tesis' ? '/tesis' : path
       router.push(finalPath.startsWith('/') ? finalPath : '/veli')
     } catch (err: unknown) {
       setError(translateAuthError(err instanceof Error ? err.message : 'Giris hatasi'))

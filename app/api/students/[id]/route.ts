@@ -95,7 +95,7 @@ export async function PATCH(
     if (adSoyad !== undefined) {
       updates.name = adSoyad.split(' ')[0] || adSoyad
       const rest = adSoyad.split(' ').slice(1).join(' ')
-      if (rest) updates.surname = rest
+      updates.surname = rest || null
     }
     if (dogumTarihi !== undefined) updates.birth_date = dogumTarihi
     if (cinsiyet !== undefined) updates.gender = cinsiyet
