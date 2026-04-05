@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       .from('user_tenants')
       .select('role')
       .eq('user_id', user.id)
-      .in('role', ['owner', 'manager', 'coach'])
+      .in('role', ['tenant_owner', 'owner', 'manager', 'coach'])
       .limit(1)
       .maybeSingle()
     if (!userRole) return NextResponse.json({ error: 'Gorev olusturma yetkiniz yok' }, { status: 403 })
