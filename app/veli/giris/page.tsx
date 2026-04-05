@@ -95,14 +95,14 @@ export default function VeliGirisPage() {
               <Input
                 id="telefon"
                 type="tel"
-                placeholder="5XX XXX XX XX"
+                placeholder="5307104624 (basinda 0 olmadan)"
                 value={telefon}
                 onChange={(e) => setTelefon(e.target.value)}
                 className="pl-9 bg-white border-gray-300 text-gray-900"
                 disabled={loading}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">Basinda 0 olmadan 10 haneli telefon numaraniz</p>
+            <p className="text-xs text-gray-500 mt-1">Sifreniz telefon numaranizin son 4 hanesidir</p>
           </div>
           <div>
             <Label htmlFor="password" className="text-gray-700">Sifre</Label>
