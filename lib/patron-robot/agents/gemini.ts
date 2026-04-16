@@ -4,9 +4,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 
 async function run(prompt: string): Promise<{ text: string; raw: unknown }> {
   const apiKey =
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_AI_API_KEY ||
-    process.env.GOOGLE_API_KEY
+    process.env.GOOGLE_GEMINI_API_KEY ||
+    process.env.GOOGLE_AI_API_KEY
 
   if (!apiKey) {
     return {

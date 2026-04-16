@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, TrendingUp, Target, LogOut, Activity } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 const NAV = [
   { href: '/sportif-direktor', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,8 +29,8 @@ export default function SportifDirektorLayout({ children }: { children: React.Re
       }
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
-      const raw = d?.rawRole ?? d?.role
-      if (!['sportif_direktor', 'tenant_owner', 'owner', 'admin', 'manager'].includes(raw)) {
+      const canonical = canonicalizeRole(d?.rawRole ?? d?.role)
+      if (!canonical || !['sports_director', 'tenant_owner', 'branch_manager'].includes(canonical)) {
         router.replace('/franchise')
         return
       }

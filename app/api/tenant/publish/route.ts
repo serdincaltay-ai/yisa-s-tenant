@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getTenantIdWithFallback } from '@/lib/franchise-tenant'
 import { REQUIRED_SLOT_KEYS } from '@/lib/templates/slot-definitions'
+import { computeMissingRequiredSlots } from '@/lib/templates/publishability'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,14 +34,14 @@ export async function POST(req: NextRequest) {
       .eq('tenant_id', tenantId)
       .eq('is_active', true)
 
-    const filledSlots = (slots ?? []).filter(s => {
-      const icerik = s.icerik as Record<string, unknown> | null
-      return icerik && Object.keys(icerik).length > 0
-    })
-    const filledKeys = filledSlots.map(s => s.slot_key as string)
-
-    // Zorunlu slotlardan eksik olanları bul
-    const missingSlots = REQUIRED_SLOT_KEYS.filter(k => !filledKeys.includes(k))
+    const missingSlots = computeMissingRequiredSlots(
+      (slots ?? []).map((s) => ({
+        slot_key: String(s.slot_key),
+        icerik: (s.icerik as Record<string, unknown> | null) ?? null,
+        is_active: Boolean(s.is_active),
+      })),
+      REQUIRED_SLOT_KEYS
+    )
 
     if (missingSlots.length > 0) {
       return NextResponse.json({
@@ -97,12 +98,15 @@ export async function GET(req: NextRequest) {
       .eq('tenant_id', tenantId)
       .order('sira', { ascending: true })
 
-    const filledSlots = (slots ?? []).filter(s => {
-      const icerik = s.icerik as Record<string, unknown> | null
-      return s.is_active && icerik && Object.keys(icerik).length > 0
-    })
-    const filledKeys = filledSlots.map(s => s.slot_key as string)
-    const missingSlots = REQUIRED_SLOT_KEYS.filter(k => !filledKeys.includes(k))
+    const normalizedSlots = (slots ?? []).map((s) => ({
+      slot_key: String(s.slot_key),
+      icerik: (s.icerik as Record<string, unknown> | null) ?? null,
+      is_active: Boolean(s.is_active),
+    }))
+    const missingSlots = computeMissingRequiredSlots(normalizedSlots, REQUIRED_SLOT_KEYS)
+    const filledSlots = normalizedSlots.filter(
+      (s) => s.is_active && s.icerik && Object.keys(s.icerik).length > 0
+    )
 
     return NextResponse.json({
       ok: true,

@@ -131,7 +131,7 @@ export async function GET() {
     const aiConfigs = [
       { name: 'OpenAI (GPT)', key: 'OPENAI_API_KEY' },
       { name: 'Anthropic (Claude)', key: 'ANTHROPIC_API_KEY' },
-      { name: 'Google (Gemini)', key: 'GOOGLE_API_KEY' },
+      { name: 'Google (Gemini)', key: 'GOOGLE_GEMINI_API_KEY' },
       { name: 'Together', key: 'TOGETHER_API_KEY' },
       { name: 'V0', key: 'V0_API_KEY' },
       { name: 'GitHub', key: 'GITHUB_TOKEN' },

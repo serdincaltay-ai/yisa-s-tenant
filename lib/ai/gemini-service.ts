@@ -8,7 +8,7 @@ const GOOGLE_GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/mode
 const GOOGLE_GEMINI_PRO_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
 
 function getGeminiKey(): string | undefined {
-  const v = process.env.GOOGLE_API_KEY ?? process.env.GOOGLE_GEMINI_API_KEY ?? process.env.GEMINI_API_KEY
+  const v = process.env.GOOGLE_GEMINI_API_KEY
   return typeof v === 'string' ? v.trim() || undefined : undefined
 }
 
@@ -22,7 +22,7 @@ export async function callGemini(
 ): Promise<string | null> {
   const apiKey = getGeminiKey()
   if (!apiKey) {
-    console.warn('[GEMINI] GOOGLE_API_KEY yok')
+    console.warn('[GEMINI] GOOGLE_GEMINI_API_KEY yok')
     return null
   }
 
@@ -54,7 +54,7 @@ export async function callGemini(
 
 export async function research(query: string, context?: string): Promise<{ text: string; error?: string }> {
   const apiKey = getGeminiKey()
-  if (!apiKey) return { text: '', error: 'GOOGLE_API_KEY yok' }
+  if (!apiKey) return { text: '', error: 'GOOGLE_GEMINI_API_KEY yok' }
 
   try {
     const url = `${GOOGLE_GEMINI_PRO_URL}?key=${apiKey}`

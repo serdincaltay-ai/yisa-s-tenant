@@ -20,7 +20,7 @@ export const AI_PROVIDERS = {
   GEMINI: {
     name: 'Gemini',
     role: 'Araştırma, Veri Analizi',
-    endpoint: (process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY) ? 'https://generativelanguage.googleapis.com/v1' : null,
+    endpoint: process.env.GOOGLE_GEMINI_API_KEY ? 'https://generativelanguage.googleapis.com/v1' : null,
     model: 'gemini-pro',
   },
   TOGETHER: {

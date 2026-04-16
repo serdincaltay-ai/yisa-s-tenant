@@ -13,7 +13,7 @@ function env(key: string): string | undefined {
 
 /** CELF orkestratör (Gemini) anahtarı */
 export function getCelfOrchestratorKey(): string | undefined {
-  return env('CELF_GOOGLE_API_KEY') ?? env('CELF_GOOGLE_GEMINI_API_KEY') ?? env('GOOGLE_API_KEY') ?? env('GOOGLE_GEMINI_API_KEY') ?? env('GEMINI_API_KEY')
+  return env('CELF_GOOGLE_API_KEY') ?? env('CELF_GOOGLE_GEMINI_API_KEY') ?? env('GOOGLE_GEMINI_API_KEY')
 }
 
 /** Direktörlük dış API anahtarları */

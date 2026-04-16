@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
   // ── 3. Idempotency guard ───────────────────────────────────────────
   const alreadyProcessed = await isEventAlreadyProcessed(service, event.id)
   if (alreadyProcessed) {
-    console.log(`[stripe-webhook] Event zaten islendi, atlaniyor: ${event.id}`)
     return NextResponse.json({ received: true, status: 'already_processed', event_id: event.id })
   }
 
@@ -236,8 +235,6 @@ async function handleCheckoutCompleted(
     updatedCount = updatedRows?.length ?? 0
   }
 
-  console.log(`[stripe-webhook] ${updatedCount} odeme guncellendi (${paymentTable}), tenant: ${tenantId}`)
-
   // ders_kredisi guncelleme: athlete_id varsa ve odeme gercekten guncellendiyse
   const athleteId = metadata.athlete_id
   if (athleteId && updatedCount > 0) {
@@ -260,8 +257,6 @@ async function handleCheckoutCompleted(
 
       if (athUpdateErr) {
         console.error('[stripe-webhook] ders_kredisi guncelleme hatasi:', athUpdateErr)
-      } else {
-        console.log(`[stripe-webhook] athlete ${athleteId} ders_kredisi: ${ath.ders_kredisi ?? 0} -> ${yeniDersKredisi}`)
       }
     }
   }
@@ -290,8 +285,6 @@ async function handleCheckoutExpired(
 ) {
   const session = event.data.object as Stripe.Checkout.Session
   const metadata = session.metadata ?? {}
-
-  console.log(`[stripe-webhook] Checkout expired: session=${session.id}, tenant=${metadata.tenant_id ?? 'unknown'}`)
 
   await logWebhookEvent(service, {
     stripe_event_id: event.id,

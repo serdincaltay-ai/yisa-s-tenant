@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 const ROBOTS = [
   { id: 'GPT', name: 'GPT', key: 'OPENAI_API_KEY' },
   { id: 'Claude', name: 'Claude', key: 'ANTHROPIC_API_KEY' },
-  { id: 'Gemini', name: 'Gemini', key: 'GOOGLE_API_KEY' },
+  { id: 'Gemini', name: 'Gemini', key: 'GOOGLE_GEMINI_API_KEY' },
   { id: 'Together', name: 'Together', key: 'TOGETHER_API_KEY' },
   { id: 'GitHub', name: 'GitHub', key: 'GITHUB_TOKEN' },
   { id: 'Supabase', name: 'Supabase', key: 'SUPABASE_SERVICE_ROLE_KEY' },

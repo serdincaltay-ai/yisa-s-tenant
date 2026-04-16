@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# yisa-s-tenant
 
-## Getting Started
+YİSA-S tenant paneli, `*.yisa-s.com` alanında tesis içi operasyonları çalıştıran çok kiracılı (multi-tenant) uygulamadır.
 
-First, run the development server:
+## Ne yapar?
+
+- Veli deneyimi: giriş, profil, ödeme, gelişim, ölçüm, randevu
+- Antrenör deneyimi: sporcular, yoklama, ders akışı, ölçüm
+- Franchise/tesis operasyonu: personel, şube, kasa, rapor, rutin dersler
+- Kayıt operasyonu: öğrenci kaydı, lead/trial süreçleri
+- Onboarding: tenant oluşturma, subdomain, slot/publish hazırlığı
+
+## Rol bazlı modüller
+
+- `tenant_owner` / `branch_manager`: franchise ve operasyon ekranları
+- `coach`: antrenör paneli
+- `assistant_coach`: yardımcı antrenör paneli (`/assistant-coach`)
+- `registration_staff`: kayıt paneli (`/kayit`)
+- `cleaning_staff`: temizlik paneli (`/temizlik`)
+- `security_staff`: güvenlik paneli (`/guvenlik`)
+- `parent`: veli paneli (`/veli`)
+
+## Teknoloji
+
+- Next.js 15 (App Router)
+- React 19 + TypeScript
+- Supabase (Auth + veritabanı)
+- Tailwind CSS + shadcn/ui
+
+## Kurulum
+
+1) Bağımlılıklar:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2) Ortam değişkenleri:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3) Geliştirme:
 
-## Learn More
+```bash
+PORT=3002 npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+4) Test/Lint/Build:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run test
+npm run lint
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## SSOT ve kurallar
 
-## Deploy on Vercel
+Sistem kuralları tek kaynak:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `docs/SYSTEM_RULES_SSOT.md`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Repo sınırları, rol terminolojisi, migration tek-kaynak ilkesi bu dosyaya göre yürütülür.
+
+Ek dokümanlar:
+
+- `docs/MIGRATIONS.md` (migration tek kaynak)
+- `docs/MIGRATION_TO_PATRON.md` (tenant dışı CELF/Patron uçlarının taşınması)
+
+## Deploy (Vercel)
+
+Deploy ve domain adımları:
+
+- `docs/DEPLOY.md`
+
+Özet:
+
+- Tenant projesi wildcard domain ile çalışır: `*.yisa-s.com`
+- Gerekli env değişkenleri Vercel Project Settings > Environment Variables altında tanımlanır
+- Şema değişiklikleri yalnızca `supabase/migrations` üzerinden yönetilir

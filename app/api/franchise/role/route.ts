@@ -10,10 +10,17 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 export const dynamic = 'force-dynamic'
 
 export type PanelRole = 'owner' | 'coach' | 'parent'
+
+function panelRoleFromCanonicalRole(role: string): PanelRole {
+  if (['coach', 'assistant_coach'].includes(role)) return 'coach'
+  if (['parent', 'athlete'].includes(role)) return 'parent'
+  return 'owner'
+}
 
 export async function GET() {
   try {
@@ -34,7 +41,7 @@ export async function GET() {
       .eq('owner_id', user.id)
       .limit(1)
       .maybeSingle()
-    if (t) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: 'tenant_owner' })
+    if (t) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: 'tenant_owner', canonicalRole: 'tenant_owner' })
 
     // user_tenants.role → owner/admin/manager = owner, trainer = coach, kasa/tesis_muduru = kasa erişimi
     const { data: ut } = await service
@@ -45,27 +52,27 @@ export async function GET() {
       .maybeSingle()
     if (ut?.role) {
       const r = String(ut.role).toLowerCase()
+      const canonicalRole = canonicalizeRole(r) ?? 'tenant_owner'
+      const panelRole = panelRoleFromCanonicalRole(canonicalRole)
       const canAccessKasa = ['tenant_owner', 'owner', 'admin', 'manager', 'kasa', 'tesis_muduru'].includes(r)
-      if (['tenant_owner', 'owner', 'admin', 'manager'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa, rawRole: r })
-      if (['coach', 'trainer'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
-      if (['kasa', 'tesis_muduru'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: r })
-      // Granular roles — map to closest PanelRole but preserve rawRole for franchise layout
-      if (['coach', 'antrenor'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
-      if (['receptionist', 'kayit_gorevlisi'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: false, rawRole: r })
-      if (['cleaning', 'temizlik'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: false, rawRole: r })
+      return NextResponse.json({ role: panelRole, canAccessKasa, rawRole: r, canonicalRole })
     }
 
     // app_metadata veya user_metadata
     const metaRole = (user.app_metadata?.role ?? user.user_metadata?.role) as string | undefined
     if (metaRole) {
       const r = String(metaRole).toLowerCase()
-      if (['tenant_owner', 'owner', 'admin'].includes(r)) return NextResponse.json({ role: 'owner' as PanelRole, canAccessKasa: true, rawRole: r })
-      if (['coach', 'trainer', 'antrenor'].includes(r)) return NextResponse.json({ role: 'coach' as PanelRole, canAccessKasa: false, rawRole: r })
-      if (r === 'parent' || r === 'veli') return NextResponse.json({ role: 'parent' as PanelRole, canAccessKasa: false, rawRole: r })
+      const canonicalRole = canonicalizeRole(r) ?? 'tenant_owner'
+      return NextResponse.json({
+        role: panelRoleFromCanonicalRole(canonicalRole),
+        canAccessKasa: ['tenant_owner', 'branch_manager', 'cashier'].includes(canonicalRole),
+        rawRole: r,
+        canonicalRole,
+      })
     }
 
-    return NextResponse.json({ role: 'owner', canAccessKasa: true, rawRole: 'owner' })
+    return NextResponse.json({ role: 'owner', canAccessKasa: true, rawRole: 'owner', canonicalRole: 'tenant_owner' })
   } catch {
-    return NextResponse.json({ role: 'owner', rawRole: 'owner' })
+    return NextResponse.json({ role: 'owner', rawRole: 'owner', canonicalRole: 'tenant_owner' })
   }
 }

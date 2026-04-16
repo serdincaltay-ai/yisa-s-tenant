@@ -91,7 +91,7 @@ async function callOpenAI(message: string): Promise<string | null> {
 
 /** DELEGATE:GEMINI veya doğrudan Gemini çağrısı. gemini-1.5-flash → gemini-2.0-flash → gemini-pro dener. */
 async function callGemini(message: string, systemHint?: string): Promise<string | null> {
-  const apiKey = getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_API_KEY'])
+  const apiKey = getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_GEMINI_API_KEY'])
   if (!apiKey) return null
   const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models'
   const text = systemHint ? `[Sistem: ${systemHint}]\n\nKullanıcı görevi:\n${message}` : message
@@ -137,8 +137,8 @@ async function readApiError(res: Response): Promise<string> {
 
 /** CELF görevlendirici: gemini-2.0-flash → gemini-1.5-flash → gemini-pro. URL: generativelanguage.googleapis.com/v1beta/models/MODEL:generateContent?key=GOOGLE_API_KEY */
 async function callGeminiOrchestrator(system: string, message: string): Promise<string | { error: string }> {
-  const apiKey = getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_API_KEY'])
-  if (!apiKey) return { error: 'GOOGLE_API_KEY / GEMINI_API_KEY .env.local içinde tanımlı değil.' }
+  const apiKey = getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_GEMINI_API_KEY'])
+  if (!apiKey) return { error: 'GOOGLE_GEMINI_API_KEY .env.local içinde tanımlı değil.' }
 
   const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models'
   const userMessage = `[Sistem: ${system}]\n\nPatron görevi:\n${message}`
@@ -180,7 +180,7 @@ async function callGeminiOrchestrator(system: string, message: string): Promise<
   text = await tryGemini('gemini-pro', bodyInline, 'Gemini-pro')
   if (text) return text
 
-  return { error: lastError || 'Gemini yanıt vermedi. GOOGLE_API_KEY .env.local\'de geçerli mi kontrol edin.' }
+  return { error: lastError || 'Gemini yanıt vermedi. GOOGLE_GEMINI_API_KEY .env.local\'de geçerli mi kontrol edin.' }
 }
 
 async function callTogether(message: string): Promise<string | null> {
@@ -306,9 +306,9 @@ export async function runCelfDirector(
     return { text: null, errorReason: 'CTO: Claude veya Cursor yanıt vermedi.' }
   }
 
-  const geminiKey = getCelfOrchestratorKey() ?? getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GOOGLE_GEMINI_API_KEY', 'GEMINI_API_KEY'])
+  const geminiKey = getCelfOrchestratorKey() ?? getCelfKey('CELF_GOOGLE_API_KEY', ['CELF_GOOGLE_GEMINI_API_KEY', 'GOOGLE_GEMINI_API_KEY'])
   if (!geminiKey) {
-    return { text: null, errorReason: 'CELF: GOOGLE_API_KEY .env içinde tanımlı değil. Gemini (görevlendirici) çalışamıyor.' }
+    return { text: null, errorReason: 'CELF: GOOGLE_GEMINI_API_KEY .env içinde tanımlı değil. Gemini (görevlendirici) çalışamıyor.' }
   }
 
   const reportDelegateHint = isReportRequest
@@ -405,6 +405,6 @@ Cevabın doğrudan yanıtsa sadece yanıtı yaz; aynı cevaba DELEGATE satırı 
 
   return {
     text: null,
-    errorReason: 'Gemini görevlendirici yanıt vermedi ve yedek API\'ler de başarısız. .env\'de GOOGLE_API_KEY (ve istenen yedekler: OPENAI_API_KEY, ANTHROPIC_API_KEY) geçerli mi kontrol edin.',
+    errorReason: 'Gemini görevlendirici yanıt vermedi ve yedek API\'ler de başarısız. .env\'de GOOGLE_GEMINI_API_KEY (ve istenen yedekler: OPENAI_API_KEY, ANTHROPIC_API_KEY) geçerli mi kontrol edin.',
   }
 }

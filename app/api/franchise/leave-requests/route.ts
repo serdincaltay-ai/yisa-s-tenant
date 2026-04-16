@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getTenantIdWithFallback } from '@/lib/franchise-tenant'
+import { toCanonicalRole } from '@/lib/auth/role-canonical'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +32,8 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
       .maybeSingle()
-    if (!roleCheck || !['patron', 'tenant_owner', 'franchise', 'mudur'].includes(roleCheck.role)) {
+    const canonical = toCanonicalRole(roleCheck?.role ?? null)
+    if (!canonical || !['platform_owner', 'tenant_owner', 'branch_manager'].includes(canonical)) {
       return NextResponse.json({ error: 'Yetki yetersiz' }, { status: 403 })
     }
 
@@ -90,7 +92,8 @@ export async function PATCH(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
       .maybeSingle()
-    if (!roleCheck || !['patron', 'tenant_owner', 'franchise', 'mudur'].includes(roleCheck.role)) {
+    const canonical = toCanonicalRole(roleCheck?.role ?? null)
+    if (!canonical || !['platform_owner', 'tenant_owner', 'branch_manager'].includes(canonical)) {
       return NextResponse.json({ error: 'Yetki yetersiz' }, { status: 403 })
     }
 

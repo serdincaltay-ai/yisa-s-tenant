@@ -5,9 +5,12 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { UserPlus, CreditCard, ClipboardCheck, Phone, LogOut, LayoutDashboard } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 const NAV = [
   { href: '/kayit', label: 'Yeni Kayıt', icon: UserPlus },
+  { href: '/kayit/leadler', label: 'Leadler', icon: UserPlus },
+  { href: '/kayit/deneme-talepleri', label: 'Deneme Talepleri', icon: ClipboardCheck },
   { href: '/kayit/odeme-durumu', label: 'Ödeme Durumu', icon: CreditCard },
   { href: '/kayit/devam-raporu', label: 'Devam Raporu', icon: ClipboardCheck },
   { href: '/kayit/veli-iletisim', label: 'Veli İletişim', icon: Phone },
@@ -29,7 +32,8 @@ export default function KayitLayout({ children }: { children: React.ReactNode })
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const raw = d?.rawRole ?? d?.role
-      if (!['kayit_gorevlisi', 'receptionist', 'kasa', 'tenant_owner', 'owner', 'admin', 'manager', 'tesis_muduru'].includes(raw)) {
+      const canonical = typeof raw === 'string' ? canonicalizeRole(raw) : null
+      if (!canonical || !['registration_staff', 'cashier', 'tenant_owner', 'branch_manager'].includes(canonical)) {
         router.replace('/franchise')
         return
       }
