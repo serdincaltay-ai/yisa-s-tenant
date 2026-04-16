@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, TrendingUp, Target, LogOut, Activity } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { isSportsDirectorLikeRole, isTenantOwnerLikeRole, normalizeRoleCode } from '@/lib/auth/role-canonical'
 
 const NAV = [
   { href: '/sportif-direktor', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,8 +29,8 @@ export default function SportifDirektorLayout({ children }: { children: React.Re
       }
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
-      const raw = d?.rawRole ?? d?.role
-      if (!['sportif_direktor', 'tenant_owner', 'owner', 'admin', 'manager'].includes(raw)) {
+      const raw = normalizeRoleCode(d?.rawRole ?? d?.role ?? '')
+      if (!(isSportsDirectorLikeRole(raw) || isTenantOwnerLikeRole(raw))) {
         router.replace('/franchise')
         return
       }

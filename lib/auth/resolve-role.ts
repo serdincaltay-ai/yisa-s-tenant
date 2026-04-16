@@ -11,6 +11,8 @@ export type ResolvedRole =
   | 'firma_sahibi'
   | 'isletme_muduru'
   | 'tesis_sahibi'
+  | 'assistant_coach'
+  | 'security_staff'
   | 'coach'
   | 'sportif_direktor'
   | 'temizlik'
@@ -28,6 +30,8 @@ function normalizeRole(raw: string | undefined | null): ResolvedRole | null {
   if (FRANCHISE_VARIANTS.some((v) => v.toLowerCase() === r)) return 'tenant_owner'
   if (['isletme_muduru', 'tesis_sahibi', 'tesis müdürü'].some((v) => r.includes(v.replace(/\s/g, '')))) return 'tesis_sahibi'
   if (['sportif_direktor', 'sportif direktor', 'sportif direktör'].some((v) => r.includes(v))) return 'sportif_direktor'
+  if (['assistant_coach', 'yardimci_antrenor', 'yardımcı antrenör', 'yardimci coach', 'yardimci', 'stajyer'].some((v) => r.includes(v))) return 'assistant_coach'
+  if (['security_staff', 'guvenlik', 'güvenlik'].some((v) => r.includes(v))) return 'security_staff'
   if (['coach', 'antrenor', 'antrenör', 'trainer'].some((v) => r.includes(v))) return 'coach'
   if (['temizlik', 'cleaning', 'temizlik_personeli'].some((v) => r.includes(v))) return 'temizlik'
   if (['kayit_gorevlisi', 'kayit_personeli', 'kayıt personeli', 'kayit gorevlisi'].some((v) => r.includes(v))) return 'kayit_gorevlisi'
@@ -83,6 +87,8 @@ export const ROLE_TO_PATH: Record<ResolvedRole, string> = {
   isletme_muduru: '/isletme-muduru',
   tesis_sahibi: '/isletme-muduru',
   coach: '/antrenor',
+  assistant_coach: '/assistant-coach',
+  security_staff: '/security-staff',
   sportif_direktor: '/sportif-direktor',
   temizlik: '/temizlik',
   kayit_gorevlisi: '/kayit',

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { BranchProvider } from '@/lib/context/branch-context'
+import { toCanonicalRole } from '@/lib/auth/role-canonical'
 
 /**
  * Rol bazlı erişim haritası
@@ -13,7 +14,24 @@ import { BranchProvider } from '@/lib/context/branch-context'
  * cleaning / temizlik → sadece: temizlik
  */
 /** rawRole values from user_tenants.role — used for granular access control */
-type RawRole = 'tenant_owner' | 'owner' | 'admin' | 'manager' | 'tesis_muduru' | 'kasa' | 'coach' | 'antrenor' | 'trainer' | 'receptionist' | 'kayit_gorevlisi' | 'cleaning' | 'temizlik' | 'sportif_direktor' | 'isletme_muduru'
+type RawRole =
+  | 'tenant_owner'
+  | 'owner'
+  | 'admin'
+  | 'manager'
+  | 'tesis_muduru'
+  | 'kasa'
+  | 'coach'
+  | 'antrenor'
+  | 'trainer'
+  | 'assistant_coach'
+  | 'receptionist'
+  | 'kayit_gorevlisi'
+  | 'cleaning'
+  | 'temizlik'
+  | 'security_staff'
+  | 'sportif_direktor'
+  | 'isletme_muduru'
 
 const FULL_ACCESS_ROLES: RawRole[] = ['tenant_owner', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa']
 
@@ -30,6 +48,8 @@ const REDIRECT_ROLES: Record<string, string> = {
   coach: '/antrenor',
   antrenor: '/antrenor',
   trainer: '/antrenor',
+  assistant_coach: '/assistant-coach',
+  security_staff: '/security-staff',
   sportif_direktor: '/sportif-direktor',
   isletme_muduru: '/isletme-muduru',
 }
@@ -57,11 +77,8 @@ export default function FranchiseLayout({
         const roleRes = await fetch('/api/franchise/role')
         if (roleRes.ok) {
           const roleData = await roleRes.json() as { role?: string; rawRole?: string }
-          if (roleData?.rawRole) {
-            rawRole = roleData.rawRole as RawRole
-          } else if (roleData?.role) {
-            rawRole = roleData.role as RawRole
-          }
+          const canonical = toCanonicalRole(roleData?.rawRole ?? roleData?.role)
+          if (canonical) rawRole = canonical as RawRole
         }
       } catch {
         // Role fetch failed

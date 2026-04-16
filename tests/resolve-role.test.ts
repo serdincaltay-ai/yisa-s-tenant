@@ -35,4 +35,26 @@ describe('resolveLoginRole', () => {
     expect(role).toBe('veli')
     expect(ROLE_TO_PATH[role]).toBe('/veli')
   })
+
+  it('maps assistant coach to assistant coach panel', () => {
+    const role = resolveLoginRole({
+      userId: 'u4',
+      email: 'yardimci@example.com',
+      userTenantsRole: 'assistant_coach',
+    })
+
+    expect(role).toBe('assistant_coach')
+    expect(ROLE_TO_PATH[role]).toBe('/assistant-coach')
+  })
+
+  it('maps security staff to security panel', () => {
+    const role = resolveLoginRole({
+      userId: 'u5',
+      email: 'guvenlik@example.com',
+      userTenantsRole: 'security_staff',
+    })
+
+    expect(role).toBe('security_staff')
+    expect(ROLE_TO_PATH[role]).toBe('/security-staff')
+  })
 })
