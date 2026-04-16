@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# yisa-s-tenant
 
-## Getting Started
+YİSA-S çok kiracılı (multi-tenant) tenant uygulaması.  
+Bu repo, `*.yisa-s.com` altındaki tesis içi operasyonları yönetir.
 
-First, run the development server:
+## Kapsam
+
+- Veli paneli
+- Sporcu/öğrenci süreçleri
+- Antrenör paneli
+- Franchise/tesis operasyonları
+- Kayıt ve onboarding akışları
+- Tenant bazlı içerik slotları ve yayın kontrolü
+
+## Mimari ve teknoloji
+
+- Next.js 15 (App Router)
+- React 19 + TypeScript
+- Supabase (Auth + veritabanı)
+- Tailwind CSS + shadcn/ui
+
+## Hızlı başlangıç
+
+1. Bağımlılıkları kurun:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Ortam değişkenlerini hazırlayın:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Geliştirme sunucusunu başlatın:
 
-## Learn More
+```bash
+PORT=3002 npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Uygulamayı açın:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- http://localhost:3002
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Komutlar
 
-## Deploy on Vercel
+- `npm run dev` — geliştirme sunucusu
+- `npm run lint` — ESLint kontrolü
+- `npm run build` — production build
+- `npm run test` — Vitest birim testleri
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Kritik kurallar
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Sistem kuralları tek kaynak dosyası:
+
+- `docs/SYSTEM_RULES_SSOT.md`
+
+Bu dosya repo sınırlarını (tenant/patron/vitrin), rol terminolojisini ve migration kaynak kuralını belirler.
+
+## Dağıtım
+
+Canlıya alma adımları:
+
+- `docs/DEPLOY.md`
+
+## Notlar
+
+- Root domain ve subdomain routing middleware ile yönetilir.
+- Tenant kapsamı dışındaki patron/CELF uçları bu repoda bilinçli olarak devre dışıdır.
+- Şema değişiklikleri için tek kaynak `supabase/migrations` klasörüdür.
