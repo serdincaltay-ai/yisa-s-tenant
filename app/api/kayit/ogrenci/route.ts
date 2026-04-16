@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('tenant_id', tenantId)
       .maybeSingle()
-    const allowedRoles = ['kayit_gorevlisi', 'patron', 'tenant_owner', 'franchise', 'firma_sahibi', 'tesis_sahibi', 'isletme_muduru', 'admin', 'manager', 'owner']
+    const allowedRoles = ['kayit_gorevlisi', 'patron', 'tenant_owner', 'branch_manager', 'firma_sahibi', 'tesis_sahibi', 'isletme_muduru', 'admin', 'manager', 'owner']
     if (!userTenant || !allowedRoles.includes(userTenant.role)) {
       return NextResponse.json({ error: 'Yetkiniz yok' }, { status: 403 })
     }

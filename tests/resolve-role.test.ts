@@ -26,6 +26,34 @@ describe('resolveLoginRole', () => {
     expect(ROLE_TO_PATH[role]).toBe('/franchise')
   })
 
+  it('maps mudur and isletme_muduru to branch_manager', () => {
+    const roleFromMudur = resolveLoginRole({
+      userId: 'u2a',
+      email: 'mudur@example.com',
+      profilesRole: 'mudur',
+    })
+    const roleFromIsletme = resolveLoginRole({
+      userId: 'u2b',
+      email: 'isletme@example.com',
+      userTenantsRole: 'isletme_muduru',
+    })
+
+    expect(roleFromMudur).toBe('branch_manager')
+    expect(roleFromIsletme).toBe('branch_manager')
+    expect(ROLE_TO_PATH[roleFromMudur]).toBe('/isletme-muduru')
+  })
+
+  it('maps sportif_direktor to sports_director', () => {
+    const role = resolveLoginRole({
+      userId: 'u2c',
+      email: 'sd@example.com',
+      profilesRole: 'sportif_direktor',
+    })
+
+    expect(role).toBe('sports_director')
+    expect(ROLE_TO_PATH[role]).toBe('/sportif-direktor')
+  })
+
   it('falls back to default parent role', () => {
     const role = resolveLoginRole({
       userId: 'u3',

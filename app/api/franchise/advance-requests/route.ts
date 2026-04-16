@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       .eq('tenant_id', tenantId)
       .maybeSingle()
     const rr = String(roleCheck?.role ?? '').toLowerCase()
-    const canManageAdvances = ['patron', 'tenant_owner', 'franchise', 'mudur', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa'].includes(rr)
+    const canManageAdvances = ['patron', 'tenant_owner', 'branch_manager', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa'].includes(rr)
     if (!roleCheck || !canManageAdvances) {
       return NextResponse.json({ error: 'Yetki yetersiz' }, { status: 403 })
     }
@@ -92,7 +92,7 @@ export async function PATCH(req: NextRequest) {
       .eq('tenant_id', tenantId)
       .maybeSingle()
     const rr = String(roleCheck?.role ?? '').toLowerCase()
-    const canManageAdvances = ['patron', 'tenant_owner', 'franchise', 'mudur', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa'].includes(rr)
+    const canManageAdvances = ['patron', 'tenant_owner', 'branch_manager', 'owner', 'admin', 'manager', 'tesis_muduru', 'kasa'].includes(rr)
     if (!roleCheck || !canManageAdvances) {
       return NextResponse.json({ error: 'Yetki yetersiz' }, { status: 403 })
     }
