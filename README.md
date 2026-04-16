@@ -1,71 +1,81 @@
 # yisa-s-tenant
 
-YİSA-S çok kiracılı (multi-tenant) tenant uygulaması.  
-Bu repo, `*.yisa-s.com` altındaki tesis içi operasyonları yönetir.
+YİSA-S tenant paneli, `*.yisa-s.com` alanında tesis içi operasyonları çalıştıran çok kiracılı (multi-tenant) uygulamadır.
 
-## Kapsam
+## Ne yapar?
 
-- Veli paneli
-- Sporcu/öğrenci süreçleri
-- Antrenör paneli
-- Franchise/tesis operasyonları
-- Kayıt ve onboarding akışları
-- Tenant bazlı içerik slotları ve yayın kontrolü
+- Veli deneyimi: giriş, profil, ödeme, gelişim, ölçüm, randevu
+- Antrenör deneyimi: sporcular, yoklama, ders akışı, ölçüm
+- Franchise/tesis operasyonu: personel, şube, kasa, rapor, rutin dersler
+- Kayıt operasyonu: öğrenci kaydı, lead/trial süreçleri
+- Onboarding: tenant oluşturma, subdomain, slot/publish hazırlığı
 
-## Mimari ve teknoloji
+## Rol bazlı modüller
+
+- `tenant_owner` / `branch_manager`: franchise ve operasyon ekranları
+- `coach`: antrenör paneli
+- `assistant_coach`: yardımcı antrenör paneli (`/assistant-coach`)
+- `registration_staff`: kayıt paneli (`/kayit`)
+- `cleaning_staff`: temizlik paneli (`/temizlik`)
+- `security_staff`: güvenlik paneli (`/guvenlik`)
+- `parent`: veli paneli (`/veli`)
+
+## Teknoloji
 
 - Next.js 15 (App Router)
 - React 19 + TypeScript
 - Supabase (Auth + veritabanı)
 - Tailwind CSS + shadcn/ui
 
-## Hızlı başlangıç
+## Kurulum
 
-1. Bağımlılıkları kurun:
+1) Bağımlılıklar:
 
 ```bash
 npm install
 ```
 
-2. Ortam değişkenlerini hazırlayın:
+2) Ortam değişkenleri:
 
 ```bash
 cp .env.example .env.local
 ```
 
-3. Geliştirme sunucusunu başlatın:
+3) Geliştirme:
 
 ```bash
 PORT=3002 npm run dev
 ```
 
-4. Uygulamayı açın:
+4) Test/Lint/Build:
 
-- http://localhost:3002
+```bash
+npm run test
+npm run lint
+npm run build
+```
 
-## Komutlar
+## SSOT ve kurallar
 
-- `npm run dev` — geliştirme sunucusu
-- `npm run lint` — ESLint kontrolü
-- `npm run build` — production build
-- `npm run test` — Vitest birim testleri
-
-## Kritik kurallar
-
-Sistem kuralları tek kaynak dosyası:
+Sistem kuralları tek kaynak:
 
 - `docs/SYSTEM_RULES_SSOT.md`
 
-Bu dosya repo sınırlarını (tenant/patron/vitrin), rol terminolojisini ve migration kaynak kuralını belirler.
+Repo sınırları, rol terminolojisi, migration tek-kaynak ilkesi bu dosyaya göre yürütülür.
 
-## Dağıtım
+Ek dokümanlar:
 
-Canlıya alma adımları:
+- `docs/MIGRATIONS.md` (migration tek kaynak)
+- `docs/MIGRATION_TO_PATRON.md` (tenant dışı CELF/Patron uçlarının taşınması)
+
+## Deploy (Vercel)
+
+Deploy ve domain adımları:
 
 - `docs/DEPLOY.md`
 
-## Notlar
+Özet:
 
-- Root domain ve subdomain routing middleware ile yönetilir.
-- Tenant kapsamı dışındaki patron/CELF uçları bu repoda bilinçli olarak devre dışıdır.
-- Şema değişiklikleri için tek kaynak `supabase/migrations` klasörüdür.
+- Tenant projesi wildcard domain ile çalışır: `*.yisa-s.com`
+- Gerekli env değişkenleri Vercel Project Settings > Environment Variables altında tanımlanır
+- Şema değişiklikleri yalnızca `supabase/migrations` üzerinden yönetilir
