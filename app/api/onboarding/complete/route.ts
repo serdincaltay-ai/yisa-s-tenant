@@ -60,6 +60,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (session.status !== 'in_progress') {
+      if (session.status === 'completed') {
+        return NextResponse.json({
+          ok: true,
+          tenant_id: session.tenant_id ?? null,
+          message: 'Onboarding daha once tamamlanmis (idempotent cevap).',
+        })
+      }
       return NextResponse.json({ error: 'Oturum zaten tamamlanmis' }, { status: 400 })
     }
 
@@ -70,34 +77,54 @@ export async function POST(req: NextRequest) {
     const renkPaleti = onbData.renk_paleti || { primary: '#1a1a2e', secondary: '#16213e', accent: '#0f3460', bg: '#0a0a0a' }
     const sablonTipi = onbData.sablon_tipi || 'standard'
 
-    // 1. Tenant olustur
+    // 1. Tenant olustur / mevcut tenant'i idempotent sekilde kullan
     const slug = generateTenantSlug(tesisAdi, session_id.slice(0, 8))
     const subdomain = subdomainSlug(tesisAdi)
 
-    const { data: newTenant, error: tenantErr } = await service
-      .from('tenants')
-      .insert({
-        ad: tesisAdi,
-        name: tesisAdi,
-        slug,
-        durum: 'aktif',
-        owner_id: user.id,
-        package_type: 'starter',
-        setup_completed: true,
-        logo_url: logoUrl,
-        primary_color: renkPaleti.primary,
-        phone: onbData.telefon ?? null,
-        address: onbData.adres ?? null,
-      } as Record<string, unknown>)
-      .select('id')
-      .single()
+    let tenantId: string | null = null
 
-    if (tenantErr || !newTenant) {
-      console.error('[onboarding/complete] Tenant error:', tenantErr)
-      return NextResponse.json({ error: 'Tenant olusturulamadi: ' + (tenantErr?.message ?? '') }, { status: 500 })
+    if (session.tenant_id) {
+      tenantId = session.tenant_id as string
+    } else {
+      const { data: existingTenant } = await service
+        .from('tenants')
+        .select('id')
+        .eq('owner_id', user.id)
+        .eq('slug', slug)
+        .maybeSingle()
+
+      if (existingTenant?.id) {
+        tenantId = existingTenant.id
+      } else {
+        const { data: newTenant, error: tenantErr } = await service
+          .from('tenants')
+          .insert({
+            ad: tesisAdi,
+            name: tesisAdi,
+            slug,
+            durum: 'aktif',
+            owner_id: user.id,
+            package_type: 'starter',
+            setup_completed: true,
+            logo_url: logoUrl,
+            primary_color: renkPaleti.primary,
+            phone: onbData.telefon ?? null,
+            address: onbData.adres ?? null,
+          } as Record<string, unknown>)
+          .select('id')
+          .single()
+
+        if (tenantErr || !newTenant) {
+          console.error('[onboarding/complete] Tenant error:', tenantErr)
+          return NextResponse.json({ error: 'Tenant olusturulamadi: ' + (tenantErr?.message ?? '') }, { status: 500 })
+        }
+        tenantId = newTenant.id as string
+      }
     }
 
-    const tenantId = newTenant.id
+    if (!tenantId) {
+      return NextResponse.json({ error: 'Tenant olusturulamadi' }, { status: 500 })
+    }
 
     // 2. user_tenants iliskisi
     await service.from('user_tenants').upsert(
@@ -105,13 +132,16 @@ export async function POST(req: NextRequest) {
       { onConflict: 'user_id,tenant_id' }
     )
 
-    // 3. Branslar ekle
+    // 3. Branslar ekle (idempotent)
     for (const brans of branslar) {
       try {
-        await service.from('tenant_branches').insert({
-          tenant_id: tenantId,
-          ad: brans,
-        })
+        await service.from('tenant_branches').upsert(
+          {
+            tenant_id: tenantId,
+            ad: brans,
+          },
+          { onConflict: 'tenant_id,ad' }
+        )
       } catch {
         // Branch insert hatasi non-fatal
       }
@@ -151,6 +181,9 @@ export async function POST(req: NextRequest) {
             .eq('subdomain', subdomain)
             .is('tenant_id', null)
           if (!updateErr) subdomainCreated = true
+        } else if (existing.tenant_id === tenantId) {
+          // Aynı tenant için subdomain zaten var
+          subdomainCreated = true
         } else {
           // Subdomain baskasina ait, suffix ekleyerek yeni subdomain olustur
           finalSubdomain = `${subdomain}-${session_id.slice(0, 6)}`
@@ -206,10 +239,13 @@ export async function POST(req: NextRequest) {
         is_active: slotConfig[slot.slot_key] ?? false,
       }))
 
-      await service.from('tenant_template_slots').insert(slotRows)
-    } catch (slotErr) {
-      console.error('[onboarding/complete] Slot creation error:', slotErr)
-      // Non-fatal — slotlar sonradan da oluşturulabilir
+      for (const row of slotRows) {
+        await service
+          .from('tenant_template_slots')
+          .upsert(row, { onConflict: 'tenant_id,slot_key' })
+      }
+    } catch (e) {
+      console.error('[onboarding/complete] Slot creation error:', e)
     }
 
     // 6. Varsayilan calisma saatleri
