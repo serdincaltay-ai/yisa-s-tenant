@@ -76,8 +76,8 @@ async function callOpenAI(message: string): Promise<{ text: string; tokens: numb
 }
 
 async function callGemini(message: string): Promise<{ text: string; tokens: number }> {
-  const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
-  if (!apiKey) throw new Error('GOOGLE_API_KEY / GEMINI_API_KEY tanımlı değil')
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  if (!apiKey) throw new Error('GOOGLE_GEMINI_API_KEY tanımlı değil')
 
   const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
     method: 'POST',

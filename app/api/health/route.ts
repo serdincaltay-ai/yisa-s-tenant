@@ -13,8 +13,6 @@ const ENV_KEYS = [
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
   'GOOGLE_GEMINI_API_KEY',
-  'GOOGLE_API_KEY',
-  'GEMINI_API_KEY',
   'OPENAI_API_KEY',
   'ANTHROPIC_API_KEY',
   'TOGETHER_API_KEY',
@@ -36,8 +34,8 @@ export async function GET() {
 
   if (!env.NEXT_PUBLIC_SUPABASE_URL.set) reasons.push('NEXT_PUBLIC_SUPABASE_URL yok')
   if (!env.NEXT_PUBLIC_SUPABASE_ANON_KEY.set) reasons.push('NEXT_PUBLIC_SUPABASE_ANON_KEY yok')
-  if (!env.GOOGLE_GEMINI_API_KEY.set && !env.GOOGLE_API_KEY.set && !env.GEMINI_API_KEY.set) {
-    reasons.push('GOOGLE_GEMINI_API_KEY / GOOGLE_API_KEY / GEMINI_API_KEY yok (ilk adım Gemini için gerekli)')
+  if (!env.GOOGLE_GEMINI_API_KEY.set) {
+    reasons.push('GOOGLE_GEMINI_API_KEY yok (ilk adım Gemini için gerekli)')
   }
   if (!env.OPENAI_API_KEY.set) reasons.push('OPENAI_API_KEY yok (imla yedeği + CELF için)')
 

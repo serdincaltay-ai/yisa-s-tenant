@@ -37,7 +37,7 @@ export async function callOpenAIChat(message: string): Promise<string | null> {
 }
 
 export async function callGeminiChat(message: string): Promise<string | null> {
-  const apiKey = getEnv('GOOGLE_API_KEY') ?? getEnv('GOOGLE_GEMINI_API_KEY') ?? getEnv('GEMINI_API_KEY')
+  const apiKey = getEnv('GOOGLE_GEMINI_API_KEY')
   if (!apiKey) return null
   const url = `${GOOGLE_GEMINI_URL}?key=${apiKey}`
   const res = await fetchWithRetry(url, {

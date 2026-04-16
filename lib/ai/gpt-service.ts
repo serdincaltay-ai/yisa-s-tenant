@@ -29,14 +29,14 @@ function getEnv(key: string): string | undefined {
 
 /** Asistan tarafı Gemini anahtarı (ayrı key; yoksa genel key) */
 function getAsistanGeminiKey(): string | undefined {
-  return getEnv('ASISTAN_GOOGLE_API_KEY') ?? getEnv('ASISTAN_GOOGLE_GEMINI_API_KEY') ?? getEnv('GOOGLE_API_KEY') ?? getEnv('GOOGLE_GEMINI_API_KEY') ?? getEnv('GEMINI_API_KEY')
+  return getEnv('ASISTAN_GOOGLE_API_KEY') ?? getEnv('ASISTAN_GOOGLE_GEMINI_API_KEY') ?? getEnv('GOOGLE_GEMINI_API_KEY')
 }
 
 /** Gemini ile imla düzeltme (vizyon: ilk adım = Gemini) — ASISTAN anahtarı */
 async function correctSpellingGemini(originalMessage: string): Promise<CorrectSpellingResult> {
   const apiKey = getAsistanGeminiKey()
   if (!apiKey) {
-    return { correctedMessage: originalMessage, changed: false, error: 'ASISTAN_GOOGLE_API_KEY veya GOOGLE_API_KEY yok' }
+    return { correctedMessage: originalMessage, changed: false, error: 'ASISTAN_GOOGLE_API_KEY veya GOOGLE_GEMINI_API_KEY yok' }
   }
   try {
     const url = `${GEMINI_URL}?key=${apiKey}`

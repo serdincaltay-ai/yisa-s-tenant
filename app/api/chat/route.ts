@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         text = (await callOpenAIChat(message)) ?? 'OPENAI_API_KEY tanımlı değil veya yanıt alınamadı.'
         break
       case 'GEMINI':
-        text = (await callGeminiChat(message)) ?? 'GOOGLE_API_KEY tanımlı değil veya yanıt alınamadı.'
+        text = (await callGeminiChat(message)) ?? 'GOOGLE_GEMINI_API_KEY tanımlı değil veya yanıt alınamadı.'
         break
       case 'TOGETHER':
         text = (await callTogetherChat(message)) ?? (await callTogetherForAssistant(message, SYSTEM_PROMPT)) ?? 'TOGETHER_API_KEY tanımlı değil veya yanıt alınamadı.'
