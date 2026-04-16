@@ -188,9 +188,23 @@ export default function KayitGorevlisiPage() {
               Yeni öğrenci kaydını bu formdan oluşturun
             </p>
           </div>
-          <Badge variant="outline" className="text-xs self-start">
-            Kayıt Görevlisi
-          </Badge>
+          <div className="flex items-center gap-2 self-start">
+            <a
+              href="/kayit/leadler"
+              className="inline-flex items-center rounded-md border px-2.5 py-1 text-xs hover:bg-muted"
+            >
+              Leadler
+            </a>
+            <a
+              href="/kayit/deneme-talepleri"
+              className="inline-flex items-center rounded-md border px-2.5 py-1 text-xs hover:bg-muted"
+            >
+              Deneme Talepleri
+            </a>
+            <Badge variant="outline" className="text-xs">
+              Kayıt Görevlisi
+            </Badge>
+          </div>
         </header>
 
         {/* toast */}
