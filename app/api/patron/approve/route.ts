@@ -1,5 +1,5 @@
 import { tenantScopeGoneResponse } from '@/lib/system/scope-guard'
 
 export async function POST() {
-  return tenantScopeGoneResponse('Patron onay API')
+  return tenantScopeGoneResponse('Patron onay API', '/api/patron/approve')
 }

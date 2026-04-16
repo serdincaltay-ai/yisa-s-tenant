@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export function tenantScopeGoneResponse(moduleName: string) {
-  return NextResponse.json(
+  const res = NextResponse.json(
     {
       ok: false,
       error: `${moduleName} tenant uygulama kapsamından çıkarıldı.`,
@@ -10,4 +10,8 @@ export function tenantScopeGoneResponse(moduleName: string) {
     },
     { status: 410 }
   )
+  res.headers.set('X-YISA-Deprecated', 'true')
+  res.headers.set('X-YISA-Migrate-To', 'yisa-s-patron')
+  res.headers.set('Link', '</docs/MIGRATION_TO_PATRON.md>; rel="deprecation"')
+  return res
 }
