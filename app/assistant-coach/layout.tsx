@@ -21,7 +21,7 @@ export default function AssistantCoachLayout({ children }: { children: React.Rea
       const roleRes = await fetch('/api/franchise/role')
       const roleData = await roleRes.json() as { rawRole?: string; role?: string }
       const canonical = canonicalizeRole(roleData.rawRole ?? roleData.role)
-      if (canonical !== 'assistant_coach' && canonical !== 'coach') {
+      if (canonical !== 'assistant_coach') {
         router.replace('/franchise')
         return
       }
