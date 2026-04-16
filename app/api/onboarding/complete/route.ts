@@ -48,7 +48,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 }
 
 async function logStep(
-  service: ReturnType<typeof createServiceClient>,
+  service: unknown,
   payload: {
     sessionId: string
     tenantId: string
@@ -58,7 +58,9 @@ async function logStep(
   }
 ) {
   try {
-    await service
+    await (service as {
+      from: (table: string) => { insert: (values: Record<string, unknown>) => Promise<unknown> }
+    })
       .from('onboarding_steps')
       .insert({
         session_id: payload.sessionId,

@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
 
-export function tenantScopeGoneResponse(moduleName: string) {
+export function tenantScopeGoneResponse(moduleName: string, suggestedPath?: string) {
   const res = NextResponse.json(
     {
       ok: false,
       error: `${moduleName} tenant uygulama kapsamından çıkarıldı.`,
       message: 'Bu modülü app.yisa-s.com (patron) uygulamasından kullanın.',
       target: 'https://app.yisa-s.com',
+      suggested_path: suggestedPath ?? null,
     },
     { status: 410 }
   )
