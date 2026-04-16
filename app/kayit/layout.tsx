@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { UserPlus, CreditCard, ClipboardCheck, Phone, LogOut, LayoutDashboard } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { toCanonicalRole } from '@/lib/auth/role-canonical'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 const NAV = [
   { href: '/kayit', label: 'Yeni Kayıt', icon: UserPlus },
@@ -32,7 +32,7 @@ export default function KayitLayout({ children }: { children: React.ReactNode })
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
       const raw = d?.rawRole ?? d?.role
-      const canonical = typeof raw === 'string' ? toCanonicalRole(raw) : null
+      const canonical = typeof raw === 'string' ? canonicalizeRole(raw) : null
       if (!canonical || !['registration_staff', 'cashier', 'tenant_owner', 'branch_manager'].includes(canonical)) {
         router.replace('/franchise')
         return

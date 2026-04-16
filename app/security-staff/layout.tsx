@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { normalizeCanonicalRole } from '@/lib/auth/role-canonical'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 export default function SecurityStaffLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -19,7 +19,7 @@ export default function SecurityStaffLayout({ children }: { children: React.Reac
       }
       const res = await fetch('/api/franchise/role')
       const d = await res.json()
-      const role = normalizeCanonicalRole(d?.rawRole ?? d?.role)
+      const role = canonicalizeRole(d?.rawRole ?? d?.role)
       if (!['security_staff', 'tenant_owner', 'branch_manager'].includes(role)) {
         router.replace('/franchise')
         return

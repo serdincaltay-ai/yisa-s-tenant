@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { canonicalRoleFromRaw } from '@/lib/auth/role-canonical'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,7 +52,7 @@ export async function GET() {
       .maybeSingle()
     if (ut?.role) {
       const r = String(ut.role).toLowerCase()
-      const canonicalRole = canonicalRoleFromRaw(r)
+      const canonicalRole = canonicalizeRole(r) ?? 'tenant_owner'
       const panelRole = panelRoleFromCanonicalRole(canonicalRole)
       const canAccessKasa = ['tenant_owner', 'owner', 'admin', 'manager', 'kasa', 'tesis_muduru'].includes(r)
       return NextResponse.json({ role: panelRole, canAccessKasa, rawRole: r, canonicalRole })
@@ -62,7 +62,7 @@ export async function GET() {
     const metaRole = (user.app_metadata?.role ?? user.user_metadata?.role) as string | undefined
     if (metaRole) {
       const r = String(metaRole).toLowerCase()
-      const canonicalRole = canonicalRoleFromRaw(r)
+      const canonicalRole = canonicalizeRole(r) ?? 'tenant_owner'
       return NextResponse.json({
         role: panelRoleFromCanonicalRole(canonicalRole),
         canAccessKasa: ['tenant_owner', 'branch_manager', 'cashier'].includes(canonicalRole),

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { BranchProvider } from '@/lib/context/branch-context'
-import { toCanonicalRole } from '@/lib/auth/role-canonical'
+import { canonicalizeRole } from '@/lib/auth/role-canonical'
 
 /**
  * Rol bazlı erişim haritası
@@ -77,7 +77,7 @@ export default function FranchiseLayout({
         const roleRes = await fetch('/api/franchise/role')
         if (roleRes.ok) {
           const roleData = await roleRes.json() as { role?: string; rawRole?: string }
-          const canonical = toCanonicalRole(roleData?.rawRole ?? roleData?.role)
+          const canonical = canonicalizeRole(roleData?.rawRole ?? roleData?.role)
           if (canonical) rawRole = canonical as RawRole
         }
       } catch {

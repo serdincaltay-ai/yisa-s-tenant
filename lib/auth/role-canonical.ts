@@ -40,3 +40,32 @@ export function hasCanonicalRole(raw: string | null | undefined, allowed: Canoni
   const c = canonicalizeRole(raw)
   return c ? allowed.includes(c) : false
 }
+
+/** Backward-compatible alias */
+export function canonicalRoleFromRaw(raw: string | null | undefined): CanonicalRole {
+  return canonicalizeRole(raw) ?? 'parent'
+}
+
+/** Backward-compatible alias */
+export function toCanonicalRole(raw: string | null | undefined): CanonicalRole | null {
+  return canonicalizeRole(raw)
+}
+
+/** Legacy helper used by layouts */
+export function normalizeCanonicalRole(raw: string | null | undefined): CanonicalRole | '' {
+  return canonicalizeRole(raw) ?? ''
+}
+
+/** Legacy helper used by sportif direktör layout */
+export function normalizeRoleCode(raw: string | null | undefined): CanonicalRole | '' {
+  return normalizeCanonicalRole(raw)
+}
+
+export function isSportsDirectorLikeRole(role: string | null | undefined): boolean {
+  return canonicalizeRole(role) === 'sports_director'
+}
+
+export function isTenantOwnerLikeRole(role: string | null | undefined): boolean {
+  const c = canonicalizeRole(role)
+  return c === 'tenant_owner' || c === 'branch_manager'
+}
