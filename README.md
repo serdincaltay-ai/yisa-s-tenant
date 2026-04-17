@@ -1,81 +1,21 @@
-# yisa-s-tenant
+# _pending_tenant
 
-YİSA-S tenant paneli, `*.yisa-s.com` alanında tesis içi operasyonları çalıştıran çok kiracılı (multi-tenant) uygulamadır.
+Bu klasör **yisa-s-tenant** Repl'i açıldığında oraya kopyalanacak 12 dosyayı içerir. Yapı, tenant reposunun kök dizinine birebir eşlenir.
 
-## Ne yapar?
+## Kopyalama
 
-- Veli deneyimi: giriş, profil, ödeme, gelişim, ölçüm, randevu
-- Antrenör deneyimi: sporcular, yoklama, ders akışı, ölçüm
-- Franchise/tesis operasyonu: personel, şube, kasa, rapor, rutin dersler
-- Kayıt operasyonu: öğrenci kaydı, lead/trial süreçleri
-- Onboarding: tenant oluşturma, subdomain, slot/publish hazırlığı
-
-## Rol bazlı modüller
-
-- `tenant_owner` / `branch_manager`: franchise ve operasyon ekranları
-- `coach`: antrenör paneli
-- `assistant_coach`: yardımcı antrenör paneli (`/assistant-coach`)
-- `registration_staff`: kayıt paneli (`/kayit`)
-- `cleaning_staff`: temizlik paneli (`/temizlik`)
-- `security_staff`: güvenlik paneli (`/guvenlik`)
-- `parent`: veli paneli (`/veli`)
-
-## Teknoloji
-
-- Next.js 15 (App Router)
-- React 19 + TypeScript
-- Supabase (Auth + veritabanı)
-- Tailwind CSS + shadcn/ui
-
-## Kurulum
-
-1) Bağımlılıklar:
-
+Tenant Repl'inde:
 ```bash
-npm install
+# Patron Repl'inden _pending_tenant/ klasörünü download → tenant köküne extract
+cp -r _pending_tenant/. ./
+rm -rf _pending_tenant
+git add public/tenants/bjktuzlacimnastik app/antrenor
+git commit -m "assets: BJK Tuzla görselleri/videoları + antrenör UI mockup eklendi"
 ```
 
-2) Ortam değişkenleri:
+> ⚠️ `app/antrenor/page.tsx` mevcut dosyanın üzerine yazar. Önce mevcut sürümle diff alıp merge yapın, body'yi körü körüne overwrite etmeyin.
 
-```bash
-cp .env.example .env.local
-```
+## İçerik (12 dosya)
 
-3) Geliştirme:
-
-```bash
-PORT=3002 npm run dev
-```
-
-4) Test/Lint/Build:
-
-```bash
-npm run test
-npm run lint
-npm run build
-```
-
-## SSOT ve kurallar
-
-Sistem kuralları tek kaynak:
-
-- `docs/SYSTEM_RULES_SSOT.md`
-
-Repo sınırları, rol terminolojisi, migration tek-kaynak ilkesi bu dosyaya göre yürütülür.
-
-Ek dokümanlar:
-
-- `docs/MIGRATIONS.md` (migration tek kaynak)
-- `docs/MIGRATION_TO_PATRON.md` (tenant dışı CELF/Patron uçlarının taşınması)
-
-## Deploy (Vercel)
-
-Deploy ve domain adımları:
-
-- `docs/DEPLOY.md`
-
-Özet:
-
-- Tenant projesi wildcard domain ile çalışır: `*.yisa-s.com`
-- Gerekli env değişkenleri Vercel Project Settings > Environment Variables altında tanımlanır
-- Şema değişiklikleri yalnızca `supabase/migrations` üzerinden yönetilir
+- `public/tenants/bjktuzlacimnastik/` — 9 görsel + 2 video (BJK Tuzla)
+- `app/antrenor/page.tsx` — antrenör paneli mobil UI mockup'ı (Serdinç onayı: BJK Tuzla varsayılan; tenant'a özel değil, tüm tenant'larda kullanılan antrenör route'u)
